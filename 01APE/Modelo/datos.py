@@ -1,4 +1,6 @@
-# Cada registro: (hora, humedad %, nubosidad %, temperatura °C)
+"""Datos de entrada proporcionados por la guía de la práctica."""
+
+# Cada registro contiene: (hora, humedad %, nubosidad %, temperatura °C).
 REGISTROS = [
     ("06:00", 65, 40, 14),
     ("08:00", 70, 50, 16),
