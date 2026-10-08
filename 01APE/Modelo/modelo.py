@@ -48,7 +48,6 @@ def calcular_factor_temperatura(temperatura: float) -> float:
 def calcular_indice(h: float, n: float, tf: float, parametros: ParametrosModelo) -> float:
     return parametros.humedad * h + parametros.nubosidad * n + parametros.temperatura * tf
 
-
 def clasificar_indice(indice: float) -> str:
     if indice < 0.40:
         return "Sin lluvia"
