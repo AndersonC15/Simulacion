@@ -1,13 +1,20 @@
-# Prompt utilizado
+# Registro del apoyo de herramientas
 
-Se pidió a la herramienta de IA revisar la guía `ape_guia simulacion semana
-1.pdf` y el código inicial, completar la práctica del índice de lluvia en
-Python con patrón MVC, conservar la estructura de la gráfica proporcionada por
-el docente, llenar las tablas del modelo original y ajustado, justificar el
-ajuste, asegurar que los tres parámetros sumen 1.0, crear un README general y
-uno por carpeta, documentar dónde se usó IA, incluir las dependencias y dejar
-el proyecto listo para ejecutarse dentro de un entorno virtual.
+El encargo inicial solicitó revisar la guía de la semana 1 y completar el
+índice de lluvia en Python, con organización MVC, tablas original y ajustada,
+gráficas, dependencias y documentación.
 
-También se indicó basarse únicamente en la guía y el código entregado, sin
-inventar requisitos, y hacer los cambios técnicos necesarios para que el
-programa funcione correctamente.
+En la revisión del 24 de octubre de 2026 se pidió trabajar exclusivamente
+en `01APE`, conservar el proyecto existente y usar clases con responsabilidades
+reales. Se solicitó corregir los límites 0.40 y 0.75 desde el origen mediante
+Decimal, conservar entradas largas admitidas sin redondeos, validar también
+el modelo, mantener el menú y arreglar las ventanas gráficas.
+
+El encargo incluyó pruebas reproducibles con referencias independientes,
+cinco revisiones documentadas, instalación temporal limpia, inspección de
+imágenes y aproximadamente cinco commits y pushes autorizados a origin/main.
+
+Codex participó en la implementación, pruebas, documentación y operaciones
+Git de esta revisión. Los resultados efectivamente comprobados y las
+limitaciones se registran en `VALIDACION.md`. No se asigna un porcentaje de uso
+de IA ni se atribuyen políticas institucionales no acreditadas por la guía.

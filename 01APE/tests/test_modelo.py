@@ -62,6 +62,41 @@ class PruebasModelo(unittest.TestCase):
         self.assertEqual(Fraction(resultado.indice), esperado)
         self.assertEqual(Fraction(resultado.factor_temperatura), esperado_tf)
 
+    def test_precision_maxima_admitida_y_pesos_largos(self):
+        a = "0." + "3" * 120
+        c = "0." + "3" * 119 + "4"
+        parametros = ParametrosModelo(a, a, c, "Pesos de 120 dígitos")
+        h, n, t = "99." + "9" * 118, "0." + "1" * 120, "17." + "1" * 118
+        esperado_tf = (Fraction(30) - Fraction(t)) / 20
+        esperado = Fraction(a) * Fraction(h) / 100 + Fraction(a) * Fraction(n) / 100 + Fraction(c) * esperado_tf
+        with localcontext() as contexto:
+            contexto.prec = 2
+            resultado = self.evaluar(h, n, t, parametros)
+            porcentaje = resultado.porcentaje
+        self.assertEqual(Fraction(resultado.indice), esperado)
+        self.assertEqual(Fraction(porcentaje), esperado * 100)
+        self.assertGreater(len(resultado.indice.as_tuple().digits), 120)
+
+    def test_exponente_minimo_y_resultados_con_mas_decimales(self):
+        parametros = ParametrosModelo("1e-120", "0." + "9" * 120, "0", "Extremos")
+        resultado = self.evaluar("1e-120", "0", "60", parametros)
+        self.assertEqual(resultado.indice, Decimal("1e-242"))
+        self.assertEqual(resultado.porcentaje, Decimal("1e-240"))
+
+    def test_calculo_completo_a_ambos_lados_de_los_umbrales(self):
+        for h, n, t, antes, desde in (
+            (35, 35, 18, "Sin lluvia", "Baja posibilidad"),
+            (75, 35, 18, "Baja posibilidad", "Lluvia probable"),
+            (70, 100, 20, "Lluvia probable", "Lluvia"),
+        ):
+            for humedad, estado in ((f"{h - 1}." + "9" * 100, antes),
+                                     (str(h), desde), (f"{h}." + "0" * 99 + "1", desde)):
+                resultado = self.evaluar(humedad, n, t)
+                tf = (Fraction(30) - t) / 20
+                esperado = Fraction(humedad) / 200 + Fraction(3 * n, 1000) + tf / 5
+                self.assertEqual(Fraction(resultado.indice), esperado)
+                self.assertEqual(resultado.estado, estado)
+
     def test_operaciones_y_pesos_exactos(self):
         self.assertEqual(sumar(ORIGINAL.humedad, ORIGINAL.nubosidad, ORIGINAL.temperatura), Decimal(1))
         self.assertEqual(sumar(AJUSTADO.humedad, AJUSTADO.nubosidad, AJUSTADO.temperatura), Decimal(1))

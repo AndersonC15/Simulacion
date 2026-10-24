@@ -1,10 +1,18 @@
 # Modelo
 
-Esta carpeta contiene la lógica matemática y los datos de entrada.
+`datos.py` contiene exactamente las nueve mediciones de la guía.
+`modelo.py` define `RegistroMeteorologico`, `ParametrosModelo`,
+`ResultadoLluvia` y `ModeloLluvia`, junto con las operaciones de normalización,
+interpolación y clasificación. Los registros y parámetros se validan al
+construirse y son inmutables.
 
-- `datos.py`: nueve registros horarios entregados en la guía.
-- `modelo.py`: normalización, tabla del factor térmico, cálculo y clasificación
-  del índice, además de los parámetros original y ajustado.
+`precision.py` convierte texto a Decimal sin float y deriva la precisión de
+cada suma y producto. Las trampas Inexact y Rounded detectan redondeos. Los
+pesos deben sumar exactamente uno. Los límites de captura (256 caracteres,
+120 dígitos de coeficiente, exponentes entre −120 y 120) se aplican a las
+mediciones y pesos; los resultados internos pueden necesitar más posiciones.
+La temperatura de entrada se limita a [−50,60] °C por decisión de la aplicación.
 
-El modelo no imprime ni dibuja resultados. `ParametrosModelo` rechaza pesos
-negativos o cuya suma no sea 1.0.
+El modelo no depende de consola, controlador, NumPy ni Matplotlib. No usa
+input, print o gráficos. Las fórmulas, intervalos y justificación de precisión
+se explican en el [README principal](../README.md).

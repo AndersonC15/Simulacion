@@ -1,14 +1,17 @@
 # Vista
 
-`graficas.py` recibe del controlador los resultados ya calculados y dibuja:
+`VistaConsola` recibe texto y presenta mensajes, tablas y resultados. Delega
+la validación al modelo; no calcula índices ni decide sus categorías. El
+formato conserva el valor decimal y ajusta el ancho de las columnas.
 
-1. Humedad, nubosidad y factor de temperatura normalizados por hora.
-2. Comparación del índice original y ajustado con los tres umbrales.
+`VistaGraficas` dibuja resultados ya calculados y devuelve una `EntregaGraficas`
+con rutas y situación de visualización. Convierte a float solo al dibujar.
+Guarda `variables_modelo.png` y `comparacion_modelos.png` dentro de
+`01APE/graficas_generadas`, con independencia del directorio de ejecución.
 
-`main.py`, situado en la raíz por indicación de la práctica, es la vista de
-consola y el punto de entrada. Esta carpeta solo complementa esa vista con las
-gráficas de Matplotlib.
-
-La opción 3 siempre guarda `variables_modelo.png` y
-`comparacion_modelos.png` en `graficas_generadas`. Así se pueden consultar los
-resultados aunque Matplotlib no disponga de un backend para abrir ventanas.
+La detección usa el framework del registro de backends de Matplotlib: Agg
+no abre ventanas; TkAgg y QtAgg sí cuando sus toolkits y el escritorio están
+disponibles. Se intenta Agg si falla el inicio del backend. Los PNG pueden
+consultarse sin ventanas. Los errores de archivos llegan al controlador y
+las figuras propias se cierran en finally. Las pruebas simuladas de show
+no equivalen a comprobar ventanas reales.

@@ -118,6 +118,14 @@ class PruebasGraficas(unittest.TestCase):
             self.assertIn("toolkit ausente (simulado)", entrega.mensaje)
             self.assertTrue(all(ruta.is_file() for ruta in entrega.rutas))
 
+    def test_fallo_simulado_de_show_conserva_png_y_cierra_figuras(self):
+        with tempfile.TemporaryDirectory() as carpeta:
+            with patch.object(plt, "get_backend", return_value="TkAgg"), patch.object(plt, "show", side_effect=RuntimeError("fallo GUI simulado")):
+                entrega = VistaGraficas(Path(carpeta)).generar(self.original, self.ajustado)
+            self.assertTrue(all(ruta.is_file() for ruta in entrega.rutas))
+            self.assertIn("no se pudieron mostrar", entrega.mensaje)
+        self.assertEqual(plt.get_fignums(), [])
+
 
 if __name__ == "__main__":
     unittest.main()
