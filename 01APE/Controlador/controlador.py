@@ -1,15 +1,18 @@
 """Coordinación del menú: la vista presenta y el modelo calcula."""
 
 from collections.abc import Callable
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from Modelo.modelo import AJUSTADO, ORIGINAL, ModeloLluvia, RegistroMeteorologico, ResultadoLluvia
 from Vista.consola import VistaConsola
 
+if TYPE_CHECKING:
+    from Vista.graficas import EntregaGraficas
+
 
 class ControladorLluvia:
     def __init__(self, modelo: ModeloLluvia, vista: VistaConsola,
-                 graficar: Callable[[list[ResultadoLluvia], list[ResultadoLluvia]], list[Path]],
+                 graficar: Callable[[list[ResultadoLluvia], list[ResultadoLluvia]], "EntregaGraficas"],
                  registros: tuple[RegistroMeteorologico, ...]) -> None:
         self.modelo = modelo
         self.vista = vista
@@ -34,10 +37,7 @@ class ControladorLluvia:
             elif opcion == "2":
                 self.vista.mostrar_tabla(ajustados, AJUSTADO.descripcion)
             elif opcion == "3":
-                rutas = self.graficar(originales, ajustados)
-                self.vista.mostrar_mensaje("Gráficas generadas correctamente:")
-                for ruta in rutas:
-                    self.vista.mostrar_mensaje(str(ruta))
+                self._generar_graficas(originales, ajustados)
             elif opcion == "4":
                 registro = self.vista.leer_registro()
                 self.vista.mostrar_resultado(self.modelo.evaluar(registro))
@@ -46,3 +46,16 @@ class ControladorLluvia:
                 return
             else:
                 self.vista.mostrar_mensaje("Opción no válida.")
+
+    def _generar_graficas(self, originales: list[ResultadoLluvia],
+                          ajustados: list[ResultadoLluvia]) -> None:
+        try:
+            entrega = self.graficar(originales, ajustados)
+        except (OSError, ImportError, RuntimeError) as error:
+            self.vista.mostrar_mensaje(f"No se completó la generación de ambas gráficas: {error}")
+            self.vista.mostrar_mensaje("Puede existir algún PNG anterior o parcial. Revise la carpeta y sus permisos.")
+            return
+        self.vista.mostrar_mensaje("Gráficas generadas correctamente:")
+        for ruta in entrega.rutas:
+            self.vista.mostrar_mensaje(str(ruta))
+        self.vista.mostrar_mensaje(entrega.mensaje)

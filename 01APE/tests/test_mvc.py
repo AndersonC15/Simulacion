@@ -8,6 +8,7 @@ from Controlador.controlador import ControladorLluvia
 from Modelo.datos import REGISTROS
 from Modelo.modelo import ModeloLluvia, RegistroMeteorologico
 from Vista.consola import VistaConsola, texto_decimal
+from Vista.graficas import EntregaGraficas
 
 
 class PruebasMVC(unittest.TestCase):
@@ -15,7 +16,7 @@ class PruebasMVC(unittest.TestCase):
         vista = Mock(spec=VistaConsola)
         vista.leer_opcion.side_effect = ["1", "2", "3", "4", "0"]
         vista.leer_registro.return_value = RegistroMeteorologico("Manual", 90, 80, 18)
-        graficar = Mock(return_value=[Path("variables.png"), Path("comparacion.png")])
+        graficar = Mock(return_value=EntregaGraficas((Path("variables.png"), Path("comparacion.png")), "Sin ventanas"))
         ControladorLluvia(ModeloLluvia(), vista, graficar, REGISTROS).ejecutar()
         self.assertEqual(vista.mostrar_tabla.call_count, 2)
         self.assertEqual(len(vista.mostrar_tabla.call_args.args[0]), 9)

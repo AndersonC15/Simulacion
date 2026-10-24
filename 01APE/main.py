@@ -4,13 +4,14 @@ from Controlador.controlador import ControladorLluvia
 from Modelo.datos import REGISTROS
 from Modelo.modelo import ModeloLluvia
 from Vista.consola import VistaConsola
-from Vista.graficas import generar_graficas
+from Vista.graficas import VistaGraficas
 
 
 def main() -> None:
     modelo = ModeloLluvia()
     vista = VistaConsola()
-    controlador = ControladorLluvia(modelo, vista, generar_graficas, REGISTROS)
+    graficas = VistaGraficas()
+    controlador = ControladorLluvia(modelo, vista, graficas.generar, REGISTROS)
     controlador.ejecutar()
 
 

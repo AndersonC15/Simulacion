@@ -1,52 +1,99 @@
-"""Gráficas de los resultados de ambos modelos."""
+"""Dibujo y almacenamiento; float se usa únicamente al trazar las curvas."""
 
-import matplotlib.pyplot as plt
-import numpy as np
+from dataclasses import dataclass
 from pathlib import Path
 
-from Modelo.modelo import ResultadoLluvia
+import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.backends import backend_registry
+from matplotlib.figure import Figure
+
+from Modelo.modelo import ResultadoLluvia, UMBRALES
 
 
-def generar_graficas(original: list[ResultadoLluvia], ajustado: list[ResultadoLluvia]) -> list[Path]:
-    carpeta_salida = Path(__file__).resolve().parent.parent / "graficas_generadas"
-    carpeta_salida.mkdir(exist_ok=True)
-    horas = [fila.registro.hora for fila in original]
-    t = np.arange(len(horas))
+def backend_interactivo(nombre: str) -> bool:
+    """Consulta el framework real: Agg es estático; TkAgg y QtAgg son GUI."""
+    _, framework = backend_registry.resolve_backend(nombre)
+    return framework is not None
 
-    # Conserva la estructura de trazado proporcionada por el docente.
-    plt.figure(figsize=(10, 5))
-    plt.plot(t, [float(f.humedad_normalizada) for f in original], marker="o", label="Humedad (H)")
-    plt.plot(t, [float(f.nubosidad_normalizada) for f in original], marker="o", label="Nubosidad (N)")
-    plt.plot(t, [float(f.factor_temperatura) for f in original], marker="o", label="Factor temperatura (Tf)")
-    plt.xticks(t, horas)
-    plt.xlabel("Hora")
-    plt.ylabel("Valor normalizado")
-    plt.title("Variables del modelo de lluvia")
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    ruta_variables = carpeta_salida / "variables_modelo.png"
-    plt.savefig(ruta_variables, dpi=150, bbox_inches="tight")
 
-    plt.figure(figsize=(10, 5))
-    plt.plot(t, [float(f.indice) for f in original], marker="o", label="Modelo original")
-    plt.plot(t, [float(f.indice) for f in ajustado], marker="o", label="Modelo ajustado")
-    plt.axhline(y=0.40, linestyle="--", color="gray", label="Baja posibilidad (0.40)")
-    plt.axhline(y=0.60, linestyle="--", color="orange", label="Lluvia probable (0.60)")
-    plt.axhline(y=0.75, linestyle="--", color="red", label="Lluvia (0.75)")
-    plt.xticks(t, horas)
-    plt.xlabel("Hora")
-    plt.ylabel("Índice de lluvia")
-    plt.title("Comparación de los modelos de lluvia")
-    plt.ylim(0, 1)
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    ruta_comparacion = carpeta_salida / "comparacion_modelos.png"
-    plt.savefig(ruta_comparacion, dpi=150, bbox_inches="tight")
+@dataclass(frozen=True)
+class EntregaGraficas:
+    rutas: tuple[Path, Path]
+    mensaje: str
 
-    # Agg genera imágenes, pero no puede abrir ventanas interactivas.
-    if "agg" not in plt.get_backend().lower():
-        plt.show()
-    plt.close("all")
-    return [ruta_variables, ruta_comparacion]
+
+class VistaGraficas:
+    def __init__(self, carpeta: Path | None = None) -> None:
+        self.carpeta = carpeta if carpeta is not None else (
+            Path(__file__).resolve().parent.parent / "graficas_generadas"
+        )
+
+    def generar(self, original: list[ResultadoLluvia],
+                ajustado: list[ResultadoLluvia]) -> EntregaGraficas:
+        figuras: list[Figure] = []
+        aviso = ""
+        try:
+            self.carpeta.mkdir(parents=True, exist_ok=True)
+            try:
+                variables, eje_variables = plt.subplots(figsize=(11, 5.5))
+            except (ImportError, RuntimeError) as error:
+                # Por ejemplo, Tk/Qt forzado en una sesión sin escritorio o sin toolkit.
+                plt.switch_backend("Agg")
+                aviso = f"No se pudo iniciar el backend gráfico ({error}). "
+                variables, eje_variables = plt.subplots(figsize=(11, 5.5))
+            figuras.append(variables)
+            self._dibujar_variables(eje_variables, original)
+            comparacion, eje_comparacion = plt.subplots(figsize=(11, 5.5))
+            figuras.append(comparacion)
+            self._dibujar_comparacion(eje_comparacion, original, ajustado)
+            rutas = (self.carpeta / "variables_modelo.png", self.carpeta / "comparacion_modelos.png")
+            for figura, ruta in zip(figuras, rutas):
+                figura.tight_layout()
+                figura.savefig(ruta, dpi=150, bbox_inches="tight")
+            if backend_interactivo(plt.get_backend()):
+                try:
+                    plt.show(block=True)
+                    mensaje = "Visualización interactiva finalizada. Los PNG también están guardados."
+                except (ImportError, RuntimeError, OSError) as error:
+                    mensaje = f"Los PNG están guardados, pero no se pudieron mostrar las ventanas: {error}"
+            else:
+                mensaje = aviso + f"Backend {plt.get_backend()} sin ventanas. Consulte los archivos PNG guardados."
+            return EntregaGraficas(rutas, mensaje)
+        finally:
+            for figura in figuras:
+                plt.close(figura)
+
+    @staticmethod
+    def _configurar_ejes(eje: Axes, resultados: list[ResultadoLluvia],
+                         titulo: str, etiqueta_y: str) -> None:
+        posiciones = range(len(resultados))
+        eje.set_xticks(posiciones, [r.registro.hora for r in resultados])
+        eje.set_xlabel("Hora")
+        eje.set_ylabel(etiqueta_y)
+        eje.set_title(titulo)
+        eje.set_ylim(0, 1)
+        eje.grid(True, alpha=0.35)
+        eje.legend(loc="best")
+
+    def _dibujar_variables(self, eje: Axes, resultados: list[ResultadoLluvia]) -> None:
+        posiciones = range(len(resultados))
+        for atributo, etiqueta in (
+            ("humedad_normalizada", "Humedad (H)"),
+            ("nubosidad_normalizada", "Nubosidad (N)"),
+            ("factor_temperatura", "Factor temperatura (Tf)"),
+        ):
+            eje.plot(posiciones, [float(getattr(r, atributo)) for r in resultados],
+                     marker="o", label=etiqueta)
+        self._configurar_ejes(eje, resultados, "Variables del modelo de lluvia", "Valor normalizado")
+
+    def _dibujar_comparacion(self, eje: Axes, original: list[ResultadoLluvia],
+                             ajustado: list[ResultadoLluvia]) -> None:
+        posiciones = range(len(original))
+        for resultados, nombre in ((original, "Modelo original"), (ajustado, "Modelo ajustado")):
+            eje.plot(posiciones, [float(r.indice) for r in resultados], marker="o", label=nombre)
+        for umbral, nombre, color in zip(UMBRALES,
+                                        ("Baja posibilidad", "Lluvia probable", "Lluvia"),
+                                        ("gray", "orange", "red")):
+            eje.axhline(float(umbral), linestyle="--", color=color, label=f"{nombre} ({umbral})")
+        self._configurar_ejes(eje, original, "Comparación de los modelos de lluvia", "Índice de lluvia")
