@@ -15,6 +15,15 @@ def validar_intervalo(valor: EntradaDecimal, minimo: str, maximo: str, nombre: s
     return numero
 
 
+LIMITES_MEDICION = {"humedad": ("0", "100"), "nubosidad": ("0", "100"),
+                    "temperatura": ("-50", "60")}
+
+
+def validar_medicion(valor: EntradaDecimal, campo: str) -> Decimal:
+    minimo, maximo = LIMITES_MEDICION[campo]
+    return validar_intervalo(convertir_decimal(valor), minimo, maximo, campo.capitalize())
+
+
 @dataclass(frozen=True)
 class ParametrosModelo:
     """Pesos finitos, no negativos y de suma decimal exactamente igual a uno."""
@@ -95,12 +104,8 @@ class RegistroMeteorologico:
     def __post_init__(self) -> None:
         if not isinstance(self.hora, str) or not self.hora.strip():
             raise ValueError("El registro debe tener una hora o etiqueta.")
-        for campo, minimo, maximo in (
-            ("humedad", "0", "100"), ("nubosidad", "0", "100"),
-            ("temperatura", "-50", "60"),
-        ):
-            numero = convertir_decimal(getattr(self, campo))
-            validar_intervalo(numero, minimo, maximo, campo.capitalize())
+        for campo in LIMITES_MEDICION:
+            numero = validar_medicion(getattr(self, campo), campo)
             object.__setattr__(self, campo, numero)
 
 

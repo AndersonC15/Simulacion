@@ -17,6 +17,14 @@ class ControladorLluvia:
         self.registros = registros
 
     def ejecutar(self) -> None:
+        try:
+            self._ejecutar_menu()
+        except EOFError:
+            self.vista.mostrar_mensaje("\nFin de entrada. Programa finalizado.")
+        except KeyboardInterrupt:
+            self.vista.mostrar_mensaje("\nOperación interrumpida. Programa finalizado.")
+
+    def _ejecutar_menu(self) -> None:
         originales = self.modelo.evaluar_tabla(self.registros, ORIGINAL)
         ajustados = self.modelo.evaluar_tabla(self.registros, AJUSTADO)
         while True:

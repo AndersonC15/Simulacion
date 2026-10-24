@@ -3,8 +3,7 @@
 from collections.abc import Callable
 from decimal import Decimal
 
-from Modelo.modelo import RegistroMeteorologico, ResultadoLluvia
-from Modelo.precision import convertir_decimal
+from Modelo.modelo import RegistroMeteorologico, ResultadoLluvia, validar_medicion
 
 
 def texto_decimal(valor: Decimal) -> str:
@@ -28,22 +27,18 @@ class VistaConsola:
                       "3. Generar gráficas\n4. Ingresar un caso manual\n0. Salir")
         return self.leer("Opción: ").strip()
 
-    def leer_numero(self, mensaje: str, minimo: int, maximo: int) -> Decimal:
+    def leer_numero(self, mensaje: str, campo: str) -> Decimal:
         while True:
             try:
-                numero = convertir_decimal(self.leer(mensaje))
-            except ValueError:
-                self.escribir("Ingrese un número válido.")
-                continue
-            if minimo <= numero <= maximo:
-                return numero
-            self.escribir(f"El valor debe estar entre {minimo} y {maximo}.")
+                return validar_medicion(self.leer(mensaje), campo)
+            except ValueError as error:
+                self.escribir(f"Entrada inválida: {error}")
 
     def leer_registro(self) -> RegistroMeteorologico:
         self.escribir("\n--- Caso manual (modelo original) ---")
-        humedad = self.leer_numero("Humedad (%): ", 0, 100)
-        nubosidad = self.leer_numero("Nubosidad (%): ", 0, 100)
-        temperatura = self.leer_numero("Temperatura (°C): ", -50, 60)
+        humedad = self.leer_numero("Humedad (%): ", "humedad")
+        nubosidad = self.leer_numero("Nubosidad (%): ", "nubosidad")
+        temperatura = self.leer_numero("Temperatura (°C): ", "temperatura")
         return RegistroMeteorologico("Caso manual", humedad, nubosidad, temperatura)
 
     def mostrar_resultado(self, resultado: ResultadoLluvia) -> None:

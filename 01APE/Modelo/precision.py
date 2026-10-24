@@ -14,9 +14,10 @@ def convertir_decimal(valor: EntradaDecimal) -> Decimal:
     """Admite punto o coma decimal, nunca agrupadores ni conversiones por float."""
     if isinstance(valor, bool) or not isinstance(valor, (str, int, Decimal)):
         raise ValueError("Use texto, enteros o Decimal; no se admiten float.")
-    texto = str(valor).strip()
+    texto = str(valor)
     if len(texto) > MAX_LONGITUD:
         raise ValueError(f"La entrada admite hasta {MAX_LONGITUD} caracteres.")
+    texto = texto.strip()
     if not _NUMERO.fullmatch(texto):
         raise ValueError("Ingrese un número finito con punto o coma decimal, sin separadores de miles.")
     partes = re.split("[eE]", texto)
