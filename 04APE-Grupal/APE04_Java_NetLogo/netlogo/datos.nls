@@ -1,0 +1,32 @@
+; DATOS: contrato CSV compartido por Java y NetLogo.
+to-report leer-serie [ruta]
+  if not file-exists? ruta [
+    error (word "No existe " ruta ". Ejecuta primero bash ejecutar.sh --semilla 42 --sin-grafica.")
+  ]
+  let filas filter [fila -> not empty? fila] (csv:from-file ruta)
+  let encabezado ["tiempo" "susceptibles" "infectados" "recuperados"]
+  if empty? filas [ error "El CSV esta vacio." ]
+  if first filas != encabezado [ error "Encabezado CSV incorrecto: tiempo,susceptibles,infectados,recuperados." ]
+  let serie but-first filas
+  if length serie != tiempo-maximo + 1 [ error "Se requieren 101 filas de datos, de t=0 a t=100." ]
+  let esperado 0
+  let anterior []
+  foreach serie [fila ->
+    if length fila != 4 [ error "Cada fila debe tener cuatro columnas." ]
+    foreach fila [valor ->
+      if not is-number? valor [ error "El CSV debe contener valores numericos." ]
+      if valor != floor valor [ error "Los tiempos y conteos deben ser enteros." ]
+      if valor < 0 [ error "No se permiten valores negativos." ]
+    ]
+    if item 0 fila != esperado [ error "Los tiempos deben ir de 0 a 100 sin saltos." ]
+    if sum (but-first fila) != poblacion-total [ error "Cada fila debe cumplir S + I + R = 100." ]
+    if not empty? anterior [
+      if item 1 fila > item 1 anterior [ error "Los susceptibles no pueden aumentar en SIR." ]
+      if item 3 fila < item 3 anterior [ error "Los recuperados no pueden disminuir en SIR." ]
+    ]
+    set anterior fila
+    set esperado esperado + 1
+  ]
+  if first serie != [0 95 5 0] [ error "El estado inicial debe ser t=0, S=95, I=5, R=0." ]
+  report serie
+end

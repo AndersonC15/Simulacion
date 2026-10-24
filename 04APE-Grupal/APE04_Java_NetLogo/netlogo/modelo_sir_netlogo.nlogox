@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model version="NetLogo 7.0.4" snapToGrid="false">
+  <code>extensions [csv]
+__includes ["datos.nls" "vista.nls" "controlador.nls"]
+globals [poblacion-total tiempo-maximo datos-java datos-referencia indice estado-mensaje]
+</code>
+  <widgets>
+    <note x="15" y="5" width="1200" height="38" fontSize="22" textColorLight="-16777216" textColorDark="-1" backgroundLight="0" backgroundDark="0" markdown="false">APE 04 | Java genera los datos - NetLogo los representa</note>
+    <note x="15" y="46" width="1200" height="26" fontSize="12" textColorLight="-16777216" textColorDark="-1" backgroundLight="0" backgroundDark="0" markdown="false">SIR: N=100 | S0=95 | I0=5 | beta=0.30 | gamma=0.10 | 100 pasos | CSV principal: java_simulado.csv</note>
+    <button x="15" y="80" width="155" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="CARGAR JAVA">cargar-java</button>
+    <button x="178" y="80" width="165" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="OTRO PRINCIPAL">elegir-java</button>
+    <button x="351" y="80" width="190" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="CARGAR REFERENCIA">cargar-referencia</button>
+    <button x="549" y="80" width="180" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="OTRA REFERENCIA">elegir-referencia</button>
+    <button x="737" y="80" width="145" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="REINICIAR">reiniciar</button>
+    <button x="890" y="80" width="145" height="38" forever="true" kind="Observer" disableUntilTicks="false" display="ANIMAR">avanzar</button>
+    <button x="1043" y="80" width="170" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="VER COMPLETO">mostrar-completo</button>
+    <button x="15" y="126" width="225" height="38" forever="false" kind="Observer" disableUntilTicks="false" display="EXPORTAR INTERFAZ PNG">exportar-interfaz</button>
+    <note x="255" y="127" width="955" height="40" fontSize="11" textColorLight="-16777216" textColorDark="-1" backgroundLight="0" backgroundDark="0" markdown="false">Referencia opcional: segunda ejecucion de Java (ejemplo: semilla 7). No hay simulador SIR en NetLogo.
+Para reproducir: REINICIAR y ANIMAR. Deten ANIMAR antes de cargar otro archivo.</note>
+    <monitor x="15" y="180" width="142" height="54" precision="0" fontSize="11" display="Tiempo principal">valor-java 0</monitor>
+    <monitor x="166" y="180" width="142" height="54" precision="0" fontSize="11" display="S principal">valor-java 1</monitor>
+    <monitor x="317" y="180" width="142" height="54" precision="0" fontSize="11" display="I principal">valor-java 2</monitor>
+    <monitor x="468" y="180" width="142" height="54" precision="0" fontSize="11" display="R principal">valor-java 3</monitor>
+    <monitor x="619" y="180" width="142" height="54" precision="0" fontSize="11" display="Tiempo referencia">valor-referencia 0</monitor>
+    <monitor x="770" y="180" width="142" height="54" precision="0" fontSize="11" display="S referencia">valor-referencia 1</monitor>
+    <monitor x="921" y="180" width="142" height="54" precision="0" fontSize="11" display="I referencia">valor-referencia 2</monitor>
+    <monitor x="1072" y="180" width="142" height="54" precision="0" fontSize="11" display="R referencia">valor-referencia 3</monitor>
+    <plot x="15" y="249" width="592" height="282" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Java principal" xAxis="Tiempo (pasos)" yAxis="Individuos" sizeVersion="1">
+      <setup />
+      <update />
+      <pen display="S" interval="1.0" mode="0" color="-14785326" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="I" interval="1.0" mode="0" color="-3659736" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="R" interval="1.0" mode="0" color="-14772666" legend="true">
+        <setup />
+        <update />
+      </pen>
+    </plot>
+    <plot x="622" y="249" width="592" height="282" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Java referencia" xAxis="Tiempo (pasos)" yAxis="Individuos" sizeVersion="1">
+      <setup />
+      <update />
+      <pen display="S" interval="1.0" mode="0" color="-14785326" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="I" interval="1.0" mode="0" color="-3659736" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="R" interval="1.0" mode="0" color="-14772666" legend="true">
+        <setup />
+        <update />
+      </pen>
+    </plot>
+    <plot x="15" y="550" width="390" height="245" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Comparar susceptibles" xAxis="Tiempo (pasos)" yAxis="Individuos" sizeVersion="1">
+      <setup />
+      <update />
+      <pen display="Principal" interval="1.0" mode="0" color="-14785326" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="Referencia" interval="1.0" mode="0" color="-1671636" legend="true">
+        <setup />
+        <update />
+      </pen>
+    </plot>
+    <plot x="420" y="550" width="390" height="245" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Comparar infectados" xAxis="Tiempo (pasos)" yAxis="Individuos" sizeVersion="1">
+      <setup />
+      <update />
+      <pen display="Principal" interval="1.0" mode="0" color="-14785326" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="Referencia" interval="1.0" mode="0" color="-1671636" legend="true">
+        <setup />
+        <update />
+      </pen>
+    </plot>
+    <plot x="825" y="550" width="390" height="245" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Comparar recuperados" xAxis="Tiempo (pasos)" yAxis="Individuos" sizeVersion="1">
+      <setup />
+      <update />
+      <pen display="Principal" interval="1.0" mode="0" color="-14785326" legend="true">
+        <setup />
+        <update />
+      </pen>
+      <pen display="Referencia" interval="1.0" mode="0" color="-1671636" legend="true">
+        <setup />
+        <update />
+      </pen>
+    </plot>
+    <note x="15" y="804" width="1200" height="25" fontSize="12" textColorLight="-16777216" textColorDark="-1" backgroundLight="0" backgroundDark="0" markdown="false">Todos los puntos vienen de archivos Java. La referencia es opcional y sirve para comparar dos ejecuciones.</note>
+    <monitor x="15" y="840" width="1200" height="54" precision="0" fontSize="11" display="Estado">estado-mensaje</monitor>
+    <view x="15" y="900" width="1" height="1" minPxcor="0" maxPxcor="0" minPycor="0" maxPycor="0" patchSize="1" wrappingAllowedX="false" wrappingAllowedY="false" fontSize="10" updateMode="1" showTickCounter="false" frameRate="15" />
+  </widgets>
+  <info># APE 04 - Visualizador CSV de Java
+Java ejecuta el modelo SIR y escribe java_simulado.csv. NetLogo solo carga, valida y representa sus filas.
+No hay generacion aleatoria, contagios, recuperaciones ni modelo SIR autonomo en NetLogo.
+El segundo archivo java_referencia.csv es opcional y tambien lo genera Java, con otra semilla.
+Las cinco graficas muestran ambas evoluciones y comparan S, I y R.
+REINICIAR + ANIMAR reproduce las filas ya existentes; no recalcula los datos.
+Mantener el .nlogox, los tres .nls y los CSV juntos. Ver LEEME_PRIMERO.md en la raiz.
+</info>
+  <turtleShapes>
+    <shape name="default" rotatable="true" editableColorIndex="0">
+      <circle color="-7500403" filled="true" marked="true" x="0" y="0" diameter="300" />
+    </shape>
+  </turtleShapes>
+  <previewCommands>startup</previewCommands>
+</model>

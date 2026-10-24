@@ -1,0 +1,71 @@
+; CONTROLADOR: carga y reproduce datos; no hay contagios ni aleatoriedad en NetLogo.
+to startup
+  clear-all
+  set poblacion-total 100
+  set tiempo-maximo 100
+  set datos-java []
+  set datos-referencia []
+  set indice 0
+  set estado-mensaje "Carga un CSV generado por Java."
+  if file-exists? "java_simulado.csv" [ cargar-java ]
+  if file-exists? "java_referencia.csv" [ cargar-referencia ]
+end
+
+to cargar-java
+  cargar-java-desde "java_simulado.csv"
+end
+
+to cargar-java-desde [ruta]
+  let nuevos leer-serie ruta
+  set datos-java nuevos
+  set indice tiempo-maximo
+  actualizar-vista
+  set estado-mensaje (word "Principal cargado: " ruta ". 101 registros de Java; NetLogo solo representa.")
+end
+
+to elegir-java
+  let ruta user-file
+  if ruta != false [ cargar-java-desde ruta ]
+end
+
+to cargar-referencia
+  cargar-referencia-desde "java_referencia.csv"
+end
+
+to cargar-referencia-desde [ruta]
+  let nuevos leer-serie ruta
+  set datos-referencia nuevos
+  set indice tiempo-maximo
+  actualizar-vista
+  set estado-mensaje "Dos ejecuciones de Java cargadas. Comparacion: principal azul; referencia naranja."
+end
+
+to elegir-referencia
+  let ruta user-file
+  if ruta != false [ cargar-referencia-desde ruta ]
+end
+
+to reiniciar
+  if empty? datos-java [ error "Primero carga el CSV principal de Java." ]
+  set indice 0
+  actualizar-vista
+  set estado-mensaje "Reproduccion en t=0. Pulsa ANIMAR para avanzar por las filas del CSV."
+end
+
+to avanzar
+  if empty? datos-java [ error "Primero carga el CSV principal de Java." ]
+  if indice >= tiempo-maximo [ stop ]
+  set indice indice + 1
+  actualizar-vista
+end
+
+to mostrar-completo
+  set indice tiempo-maximo
+  actualizar-vista
+  set estado-mensaje "Mostrando todos los datos importados de Java."
+end
+
+to exportar-interfaz
+  export-interface "../resultados/interfaz_netlogo.png"
+  set estado-mensaje "Imagen guardada en resultados/interfaz_netlogo.png."
+end

@@ -1,0 +1,44 @@
+; VISTA: representa exclusivamente los valores importados desde Java.
+to actualizar-vista
+  let principal []
+  let referencia []
+  if not empty? datos-java [ set principal sublist datos-java 0 (indice + 1) ]
+  if not empty? datos-referencia [ set referencia sublist datos-referencia 0 (indice + 1) ]
+  dibujar-serie "Java principal" principal
+  dibujar-serie "Java referencia" referencia
+  dibujar-comparacion "Comparar susceptibles" 1 principal referencia
+  dibujar-comparacion "Comparar infectados" 2 principal referencia
+  dibujar-comparacion "Comparar recuperados" 3 principal referencia
+end
+
+to dibujar-serie [nombre serie]
+  set-current-plot nombre
+  clear-plot
+  foreach serie [fila ->
+    set-current-plot-pen "S"
+    plotxy (item 0 fila) (item 1 fila)
+    set-current-plot-pen "I"
+    plotxy (item 0 fila) (item 2 fila)
+    set-current-plot-pen "R"
+    plotxy (item 0 fila) (item 3 fila)
+  ]
+end
+
+to dibujar-comparacion [nombre columna principal referencia]
+  set-current-plot nombre
+  clear-plot
+  set-current-plot-pen "Principal"
+  foreach principal [fila -> plotxy (item 0 fila) (item columna fila)]
+  set-current-plot-pen "Referencia"
+  foreach referencia [fila -> plotxy (item 0 fila) (item columna fila)]
+end
+
+to-report valor-java [columna]
+  if empty? datos-java [ report 0 ]
+  report item columna (item indice datos-java)
+end
+
+to-report valor-referencia [columna]
+  if empty? datos-referencia [ report 0 ]
+  report item columna (item indice datos-referencia)
+end

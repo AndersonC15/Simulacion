@@ -67,5 +67,5 @@ class ModeloMM1:
         return [
             Escenario(lam=2.0, mu=3.0, condicion="Sistema estable"),
             Escenario(lam=2.5, mu=3.0, condicion="Mayor utilización"),
-            Escenario(lam=2.9, mu=3.0, condicion="Cerca de saturación"),
+            Escenario(lam=2.99999, mu=3.0, condicion="Cerca de saturación"),
         ]
