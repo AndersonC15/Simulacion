@@ -4,18 +4,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 
+from Modelo.modelo import ResultadoLluvia
 
-def generar_graficas(original: list[dict], ajustado: list[dict]) -> list[Path]:
+
+def generar_graficas(original: list[ResultadoLluvia], ajustado: list[ResultadoLluvia]) -> list[Path]:
     carpeta_salida = Path(__file__).resolve().parent.parent / "graficas_generadas"
     carpeta_salida.mkdir(exist_ok=True)
-    horas = [fila["hora"] for fila in original]
+    horas = [fila.registro.hora for fila in original]
     t = np.arange(len(horas))
 
     # Conserva la estructura de trazado proporcionada por el docente.
     plt.figure(figsize=(10, 5))
-    plt.plot(t, [f["H"] for f in original], marker="o", label="Humedad (H)")
-    plt.plot(t, [f["N"] for f in original], marker="o", label="Nubosidad (N)")
-    plt.plot(t, [f["Tf"] for f in original], marker="o", label="Factor temperatura (Tf)")
+    plt.plot(t, [float(f.humedad_normalizada) for f in original], marker="o", label="Humedad (H)")
+    plt.plot(t, [float(f.nubosidad_normalizada) for f in original], marker="o", label="Nubosidad (N)")
+    plt.plot(t, [float(f.factor_temperatura) for f in original], marker="o", label="Factor temperatura (Tf)")
     plt.xticks(t, horas)
     plt.xlabel("Hora")
     plt.ylabel("Valor normalizado")
@@ -27,8 +29,8 @@ def generar_graficas(original: list[dict], ajustado: list[dict]) -> list[Path]:
     plt.savefig(ruta_variables, dpi=150, bbox_inches="tight")
 
     plt.figure(figsize=(10, 5))
-    plt.plot(t, [f["I"] for f in original], marker="o", label="Modelo original")
-    plt.plot(t, [f["I"] for f in ajustado], marker="o", label="Modelo ajustado")
+    plt.plot(t, [float(f.indice) for f in original], marker="o", label="Modelo original")
+    plt.plot(t, [float(f.indice) for f in ajustado], marker="o", label="Modelo ajustado")
     plt.axhline(y=0.40, linestyle="--", color="gray", label="Baja posibilidad (0.40)")
     plt.axhline(y=0.60, linestyle="--", color="orange", label="Lluvia probable (0.60)")
     plt.axhline(y=0.75, linestyle="--", color="red", label="Lluvia (0.75)")

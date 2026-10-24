@@ -1,21 +1,40 @@
-"""Controlador: coordina los datos de entrada y el modelo matemático."""
+"""Coordinación del menú: la vista presenta y el modelo calcula."""
 
-from Modelo.modelo import (
-    ParametrosModelo, calcular_factor_temperatura, calcular_indice,
-    clasificar_indice, normalizar_porcentaje,
-)
+from collections.abc import Callable
+from pathlib import Path
 
-
-def procesar_registro(humedad: float, nubosidad: float, temperatura: float,
-                      parametros: ParametrosModelo, hora: str = "Caso manual") -> dict:
-    h = normalizar_porcentaje(humedad)
-    n = normalizar_porcentaje(nubosidad)
-    tf = calcular_factor_temperatura(temperatura)
-    indice = calcular_indice(h, n, tf, parametros)
-    return {"hora": hora, "humedad": humedad, "nubosidad": nubosidad,
-            "temperatura": temperatura, "H": h, "N": n, "Tf": tf,
-            "I": indice, "estado": clasificar_indice(indice)}
+from Modelo.modelo import AJUSTADO, ORIGINAL, ModeloLluvia, RegistroMeteorologico, ResultadoLluvia
+from Vista.consola import VistaConsola
 
 
-def procesar_tabla(registros: list[tuple], parametros: ParametrosModelo) -> list[dict]:
-    return [procesar_registro(h, n, t, parametros, hora) for hora, h, n, t in registros]
+class ControladorLluvia:
+    def __init__(self, modelo: ModeloLluvia, vista: VistaConsola,
+                 graficar: Callable[[list[ResultadoLluvia], list[ResultadoLluvia]], list[Path]],
+                 registros: tuple[RegistroMeteorologico, ...]) -> None:
+        self.modelo = modelo
+        self.vista = vista
+        self.graficar = graficar
+        self.registros = registros
+
+    def ejecutar(self) -> None:
+        originales = self.modelo.evaluar_tabla(self.registros, ORIGINAL)
+        ajustados = self.modelo.evaluar_tabla(self.registros, AJUSTADO)
+        while True:
+            opcion = self.vista.leer_opcion()
+            if opcion == "1":
+                self.vista.mostrar_tabla(originales, ORIGINAL.descripcion)
+            elif opcion == "2":
+                self.vista.mostrar_tabla(ajustados, AJUSTADO.descripcion)
+            elif opcion == "3":
+                rutas = self.graficar(originales, ajustados)
+                self.vista.mostrar_mensaje("Gráficas generadas correctamente:")
+                for ruta in rutas:
+                    self.vista.mostrar_mensaje(str(ruta))
+            elif opcion == "4":
+                registro = self.vista.leer_registro()
+                self.vista.mostrar_resultado(self.modelo.evaluar(registro))
+            elif opcion == "0":
+                self.vista.mostrar_mensaje("Programa finalizado.")
+                return
+            else:
+                self.vista.mostrar_mensaje("Opción no válida.")

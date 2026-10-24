@@ -2,21 +2,26 @@ import unittest
 from decimal import Decimal, localcontext
 from fractions import Fraction
 
-from Controlador.controlador import procesar_registro, procesar_tabla
 from Modelo.datos import REGISTROS
 from Modelo.modelo import (
-    AJUSTADO, ORIGINAL, ParametrosModelo, calcular_factor_temperatura,
+    AJUSTADO, ORIGINAL, ModeloLluvia, RegistroMeteorologico, ParametrosModelo, calcular_factor_temperatura,
     calcular_indice, clasificar_indice, normalizar_porcentaje,
 )
 from Modelo.precision import convertir_decimal, multiplicar, sumar
 
 
 class PruebasModelo(unittest.TestCase):
+    def setUp(self):
+        self.modelo = ModeloLluvia()
+
+    def evaluar(self, h, n, t, parametros=ORIGINAL):
+        return self.modelo.evaluar(RegistroMeteorologico("Prueba", h, n, t), parametros)
+
     def test_tablas_de_referencia(self):
         originales = (".605", ".640", ".595", ".470", ".685", ".800", ".885", ".840", ".775")
         ajustados = (".580", ".620", ".572", ".440", ".680", ".800", ".888", ".842", ".770")
         for parametros, esperados in ((ORIGINAL, originales), (AJUSTADO, ajustados)):
-            self.assertEqual([f["I"] for f in procesar_tabla(REGISTROS, parametros)],
+            self.assertEqual([f.indice for f in self.modelo.evaluar_tabla(REGISTROS, parametros)],
                              [Decimal(v) for v in esperados])
 
     def test_ejemplo_y_regresiones(self):
@@ -25,9 +30,9 @@ class PruebasModelo(unittest.TestCase):
             (35, 35, 18, ".40", "Baja posibilidad"),
             (70, 100, 20, ".75", "Lluvia"),
         ):
-            resultado = procesar_registro(h, n, t, ORIGINAL)
-            self.assertEqual(resultado["I"], Decimal(esperado))
-            self.assertEqual(resultado["estado"], estado)
+            resultado = self.evaluar(h, n, t)
+            self.assertEqual(resultado.indice, Decimal(esperado))
+            self.assertEqual(resultado.estado, estado)
 
     def test_tabla_termica_e_interpolacion(self):
         for t, esperado in zip(range(10, 29, 2), ("1", ".9", ".8", ".7", ".6", ".5", ".4", ".3", ".2", ".1")):
@@ -53,9 +58,9 @@ class PruebasModelo(unittest.TestCase):
         esperado = Fraction(h) / 200 + 3 * Fraction(n) / 1000 + esperado_tf / 5
         with localcontext() as contexto:
             contexto.prec = 3
-            resultado = procesar_registro(h, n, t, ORIGINAL)
-        self.assertEqual(Fraction(resultado["I"]), esperado)
-        self.assertEqual(Fraction(resultado["Tf"]), esperado_tf)
+            resultado = self.evaluar(h, n, t)
+        self.assertEqual(Fraction(resultado.indice), esperado)
+        self.assertEqual(Fraction(resultado.factor_temperatura), esperado_tf)
 
     def test_operaciones_y_pesos_exactos(self):
         self.assertEqual(sumar(ORIGINAL.humedad, ORIGINAL.nubosidad, ORIGINAL.temperatura), Decimal(1))
@@ -89,8 +94,8 @@ class PruebasModelo(unittest.TestCase):
                         continue
                     casos += 1
                     esperado = {400: "Baja posibilidad", 600: "Lluvia probable", 750: "Lluvia"}[numerador]
-                    resultado = procesar_registro(h, n, t, ORIGINAL)
-                    if resultado["estado"] != esperado or Fraction(resultado["I"]) != Fraction(numerador, 1000):
+                    resultado = self.evaluar(h, n, t)
+                    if resultado.estado != esperado or Fraction(resultado.indice) != Fraction(numerador, 1000):
                         errores.append((h, n, t))
         self.assertEqual(casos, 946)
         self.assertEqual(errores, [])

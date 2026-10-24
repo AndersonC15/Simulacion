@@ -1,7 +1,9 @@
 """Datos de entrada proporcionados por la guía de la práctica."""
 
-# Cada registro contiene: (hora, humedad %, nubosidad %, temperatura °C).
-REGISTROS = [
+from Modelo.modelo import RegistroMeteorologico
+
+# Nueve mediciones de la guía; no se inventan los horarios restantes.
+REGISTROS = tuple(RegistroMeteorologico(hora, h, n, t) for hora, h, n, t in (
     ("06:00", 65, 40, 14),
     ("08:00", 70, 50, 16),
     ("10:00", 68, 45, 18),
@@ -11,4 +13,4 @@ REGISTROS = [
     ("18:00", 92, 95, 16),
     ("20:00", 88, 90, 17),
     ("22:00", 80, 75, 15),
-]
+))
