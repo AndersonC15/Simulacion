@@ -3,13 +3,14 @@
 from Controlador.controlador import procesar_registro, procesar_tabla
 from Modelo.datos import REGISTROS
 from Modelo.modelo import AJUSTADO, ORIGINAL
+from Modelo.precision import convertir_decimal, multiplicar
 from Vista.graficas import generar_graficas
 
 
-def leer_numero(mensaje: str, minimo: float, maximo: float) -> float:
+def leer_numero(mensaje: str, minimo: int, maximo: int):
     while True:
         try:
-            valor = float(input(mensaje).replace(",", "."))
+            valor = convertir_decimal(input(mensaje))
         except ValueError:
             print("Ingrese un número válido.")
             continue
@@ -27,7 +28,7 @@ def caso_manual() -> None:
     print(f"\nH  = {resultado['H']:.2f}")
     print(f"N  = {resultado['N']:.2f}")
     print(f"Tf = {resultado['Tf']:.2f}")
-    print(f"Índice I = {resultado['I']:.3f} ({resultado['I'] * 100:.1f}%)")
+    print(f"Índice I = {resultado['I']} ({multiplicar(resultado['I'], convertir_decimal(100))}%)")
     print(f"Estado: {resultado['estado']}")
 
 
