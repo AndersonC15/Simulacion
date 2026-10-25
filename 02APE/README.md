@@ -20,8 +20,7 @@ no representan categorías mutuamente excluyentes.
 ## Tecnologías y requisitos
 
 - Python ≥3.12 para las versiones fijadas de las dependencias. El mínimo se
-  deriva de sus metadatos; las ejecuciones comprobadas se identifican en
-  [VALIDACION.md](VALIDACION.md).
+  deriva de sus metadatos.
 - `decimal`, `fractions`, clases de datos y `typing.Protocol`, incluidos en
   Python: dominio, precisión, mallas y contrato Strategy.
 - NumPy: generador normal pseudoaleatorio local.
@@ -224,8 +223,7 @@ Estas son cifras aproximadas de este experimento reproducible, no una ley
 que obligue a duplicar la dispersión cuando actúa la restricción a cero.
 Una sola curva no demuestra que más ruido aumente o disminuya la población.
 Las semillas emparejadas facilitan comparar niveles de ruido, pero esta
-exploración no constituye una validación estadística exhaustiva. Consulta
-[VALIDACION.md](VALIDACION.md) para los resultados comprobados.
+exploración no constituye una validación estadística exhaustiva.
 
 ## MVC, POO, Strategy y SOLID
 
@@ -396,8 +394,6 @@ comprobada, comandos ejecutados y cinco revisiones se registran en
 Se utilizó Codex para inspeccionar la guía y el repositorio, implementar y
 revisar el programa, diseñar y ejecutar pruebas y preparar documentación y
 manifiestos, y adaptar APE02 a las tecnologías básicas indicadas por el
-usuario. [PROMPT.md](PROMPT.md) registra el encargo y las instrucciones
-realmente utilizadas; [VALIDACION.md](VALIDACION.md) distingue lo ejecutado de
-lo pendiente. No se afirma haber leído diapositivas que no estén disponibles,
+usuario. [PROMPT.md](PROMPT.md) registra el encargo. No se afirma haber leído diapositivas que no estén disponibles,
 ni se declara una nota o porcentaje de autoría de IA. El estudiante debe
 revisar y poder explicar las decisiones y el código antes de entregar.
