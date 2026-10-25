@@ -60,12 +60,30 @@ class VistaConsola:
         rutas = VistaGraficas().guardar(self.controlador.experimento_actual(), mostrar=True)
         self.salida("Archivos guardados: " + ", ".join(map(str, rutas)))
 
+    def enviar_netlogo(self, *, gui=False, directorio=None, netlogo_home=None):
+        from pathlib import Path
+        from uuid import uuid4
+        from Vista.puente_netlogo import ErrorNetLogo, PuenteNetLogo
+        carpeta = Path(directorio) if directorio is not None else Path(__file__).resolve().parent / "resultados"
+        carpeta.mkdir(parents=True, exist_ok=True)
+        identificador = uuid4().hex[:12]
+        try:
+            informe = PuenteNetLogo().enviar(
+                self.controlador.experimento_actual(), netlogo_home, gui=gui,
+                salida_plot=carpeta / f"netlogo-{identificador}.csv",
+                salida_interfaz=carpeta / f"netlogo-{identificador}.png" if gui else None)
+        except ErrorNetLogo as error:
+            raise ErrorValidacion(str(error)) from error
+        self.salida(f"NetLogo {informe.version_netlogo}, Java {informe.version_java}, pyNetLogo {informe.version_pynetlogo}")
+        self.salida(f"Datos de retorno verificados: {informe.datos_verificados}; puntos: {informe.puntos_por_serie}; agentes: {informe.agentes}")
+        self.salida(f"Gráfica exportada por NetLogo: {informe.archivo_plot}")
+
     def ejecutar(self):
         modelos = {"1": "deterministico", "2": "discreto", "3": "estocastico", "4": "continuo"}
         try:
             while True:
                 self.salida("\n1 Exponencial | 2 Discreto | 3 Estocástico | 4 Euler | 5 Comparar\n"
-                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 10 Gráficas | 0 Salir")
+                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 10 Gráficas | 11 NetLogo | 0 Salir")
                 try:
                     opcion = self.entrada("Opción: ").strip()
                     if opcion == "0":
@@ -84,6 +102,8 @@ class VistaConsola:
                         self.nuevo_arreglo()
                     elif opcion == "10":
                         self.graficar()
+                    elif opcion == "11":
+                        self.enviar_netlogo()
                     else:
                         self.salida("Opción inexistente; vuelva a intentarlo.")
                 except ErrorValidacion as error:
@@ -102,6 +122,9 @@ def main():
     parser.add_argument("--escenarios", action="store_true", help="guardar crecimiento, decrecimiento y constancia comparables")
     parser.add_argument("--salida", help="directorio de resultados; por defecto 02APE/resultados")
     parser.add_argument("--mostrar", action="store_true", help="abrir figuras si hay backend interactivo")
+    parser.add_argument("--netlogo", action="store_true", help="verificar el experimento en NetLogo real sin ventana")
+    parser.add_argument("--netlogo-gui", action="store_true", help="intentar ventana NetLogo durante 5 segundos, con límite de tiempo")
+    parser.add_argument("--netlogo-home", help="carpeta de instalación; también admite NETLOGO_HOME")
     argumentos = parser.parse_args()
     controlador = ControladorSimulacion()
     if argumentos.escenario:
@@ -114,13 +137,15 @@ def main():
             rutas = VistaGraficas().guardar(controlador.ejecutar(), argumentos.salida,
                                             mostrar=argumentos.mostrar, nombre=nombre)
             print("Archivos guardados:", *rutas)
-    elif argumentos.comparar or argumentos.graficas:
+    elif argumentos.comparar or argumentos.graficas or argumentos.netlogo or argumentos.netlogo_gui:
         vista.mostrar_configuracion()
         experimento = controlador.ejecutar()
         vista.presentar(experimento)
         if argumentos.graficas:
             from Vista.graficas import VistaGraficas
             print("Archivos guardados:", *VistaGraficas().guardar(experimento, argumentos.salida, mostrar=argumentos.mostrar))
+        if argumentos.netlogo or argumentos.netlogo_gui:
+            vista.enviar_netlogo(gui=argumentos.netlogo_gui, directorio=argumentos.salida, netlogo_home=argumentos.netlogo_home)
     else:
         vista.ejecutar()
 

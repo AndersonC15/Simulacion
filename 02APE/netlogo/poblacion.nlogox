@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<model version="NetLogo 7.0.4" snapToGrid="false">
+  <code><![CDATA[
+; Python calcula; este modelo recibe exactamente las mismas series y las representa.
+; No hay random-normal, ecuaciones de crecimiento ni un agente por habitante.
+globals [parametros-python escenario-python nombres-python tiempos-python
+         poblaciones-python observaciones-python puntos-recibidos]
+
+to iniciar
+  clear-all
+  set parametros-python []
+  set escenario-python "Sin experimento"
+  set nombres-python []
+  set tiempos-python []
+  set poblaciones-python []
+  set observaciones-python []
+  set puntos-recibidos 0
+  reset-ticks
+end
+
+to representar
+  clear-all-plots
+  set-current-plot "Comparación poblacional"
+  let colores [blue green orange violet]
+  let indice-serie 0
+  set puntos-recibidos 0
+  foreach nombres-python [nombre ->
+    create-temporary-plot-pen nombre
+    set-plot-pen-color item indice-serie colores
+    ; La recurrencia discreta usa puntos: no implica continuidad entre períodos.
+    ifelse nombre = "Discreto" [set-plot-pen-mode 2] [set-plot-pen-mode 0]
+    let tiempos item indice-serie tiempos-python
+    let poblaciones item indice-serie poblaciones-python
+    (foreach tiempos poblaciones [[t p] -> plotxy t p])
+    set puntos-recibidos puntos-recibidos + length tiempos
+    set indice-serie indice-serie + 1
+  ]
+  create-temporary-plot-pen "Observaciones de referencia"
+  set-plot-pen-color red
+  set-plot-pen-mode 2
+  foreach observaciones-python [par -> plotxy (item 0 par) (item 1 par)]
+end
+]]></code>
+  <widgets>
+    <view x="15" wrappingAllowedX="false" y="710" frameRate="15.0" minPycor="0" height="5" showTickCounter="false" patchSize="1.0" fontSize="10" wrappingAllowedY="false" width="1" tickCounterLabel="ticks" maxPycor="0" updateMode="1" maxPxcor="0" minPxcor="0" />
+    <note x="15" y="10" backgroundDark="0" fontSize="20" width="980" markdown="false" height="35" textColorDark="-1" textColorLight="-16777216" backgroundLight="0">APE02 | Comparación de modelos poblacionales</note>
+    <note x="15" y="50" backgroundDark="0" fontSize="12" width="980" markdown="false" height="42" textColorDark="-1" textColorLight="-16777216" backgroundLight="0">Python → pyNetLogo → NetLogo. Todas las series vienen de un mismo experimento de Python.
+Solo se usan gráficas: cero agentes por habitante. Los números visuales usan double.</note>
+    <monitor x="15" precision="0" y="100" height="60" fontSize="12" width="480" display="Escenario">escenario-python</monitor>
+    <monitor x="510" precision="0" y="100" height="60" fontSize="12" width="240" display="Puntos simulados recibidos">puntos-recibidos</monitor>
+    <button x="770" y="100" height="55" disableUntilTicks="false" forever="false" kind="Observer" width="225" display="Volver a representar">representar</button>
+    <plot x="15" autoPlotX="true" yMax="2200.0" autoPlotY="true" yAxis="Población" y="170" xMin="0.0" height="525" legend="true" xMax="6.0" yMin="0.0" width="980" xAxis="Tiempo (períodos)" display="Comparación poblacional">
+      <setup />
+      <update />
+    </plot>
+  </widgets>
+  <info>APE02: visualizador del experimento calculado en Python.
+Recibe parámetros originales como texto y series convertidas a double exclusivamente para visualizar.
+El puente verifica de vuelta todos los tiempos, poblaciones, observaciones y parámetros.
+No se regeneran los valores estocásticos. NetLogo no reemplaza los resultados Decimal.
+Compatible con la instalación probada: NetLogo 7.0.4. Ver README.md del proyecto.
+</info>
+  <turtleShapes>
+    <shape name="default" rotatable="true" editableColorIndex="0">
+      <circle x="0" y="0" marked="true" color="-7500403" diameter="300" filled="true" />
+    </shape>
+  </turtleShapes>
+  <linkShapes>
+    <shape name="default" curviness="0.0">
+      <lines>
+        <line x="-0.2" visible="false">
+          <dash value="0.0" />
+          <dash value="1.0" />
+        </line>
+        <line x="0.0" visible="true">
+          <dash value="1.0" />
+          <dash value="0.0" />
+        </line>
+        <line x="0.2" visible="false">
+          <dash value="0.0" />
+          <dash value="1.0" />
+        </line>
+      </lines>
+      <indicator>
+        <shape name="link direction" rotatable="true" editableColorIndex="0">
+          <line endX="90" startY="150" marked="true" color="-1920102913" endY="180" startX="150" />
+          <line endX="210" startY="150" marked="true" color="-1920102913" endY="180" startX="150" />
+        </shape>
+      </indicator>
+    </shape>
+  </linkShapes>
+  <previewCommands>iniciar</previewCommands>
+</model>
