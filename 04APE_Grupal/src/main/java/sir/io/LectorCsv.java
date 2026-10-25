@@ -21,6 +21,9 @@ public final class LectorCsv {
         try (BufferedReader entrada = Files.newBufferedReader(ruta, StandardCharsets.UTF_8)) {
             String cabecera = leerLinea(entrada);
             if (cabecera != null && cabecera.startsWith("\uFEFF")) { cabecera = cabecera.substring(1); }
+            if (LectorIndividuos.ENCABEZADO.equals(cabecera)) {
+                throw new IOException("Seleccionaste el CSV de individuos. Selecciona el CSV agregado de la ejecucion.");
+            }
             if (!ENCABEZADO.equals(cabecera)) { throw new IOException("Encabezado CSV incorrecto."); }
             String linea;
             while ((linea = leerLinea(entrada)) != null) {
@@ -46,7 +49,7 @@ public final class LectorCsv {
         return List.copyOf(serie);
     }
 
-    private static String leerLinea(BufferedReader entrada) throws IOException {
+    static String leerLinea(BufferedReader entrada) throws IOException {
         StringBuilder texto = new StringBuilder();
         int caracter;
         while ((caracter = entrada.read()) != -1) {
