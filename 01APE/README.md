@@ -12,7 +12,7 @@ Se requiere **Python 3.12 o posterior** y `pip`. Las versiones fijadas son
 (Python ≥3.11). La instalación y ejecución se verificaron con Python 3.14.4;
 no se ejecutó este proyecto en un intérprete 3.12. NumPy se conserva como
 dependencia de Matplotlib y material de la guía; no participa en los cálculos
-del dominio. Las pruebas usan `unittest`, incluido en Python.
+del dominio. Las pruebas usan `unittest`, incluido en Python, y `pillow==13.0.0` para inspeccionar los PNG; Pillow se declara expresamente en el manifiesto. El archivo conserva también las dependencias transitivas resueltas mediante `python -m pip freeze` en un entorno limpio de esta práctica.
 
 Abrir una terminal en `01APE`, no en la raíz del repositorio.
 

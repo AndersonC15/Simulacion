@@ -1,3 +1,34 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Entornos y archivos temporales de Python
+.venv*/
+venv/
+env/
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Editores y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Compilación Java/Maven (no elimina ejemplos ya versionados)
+*.class
+out/
+out-pruebas/
+target/
+
+# Resultados regenerables; los ejemplos versionados se conservan
+01APE/graficas_generadas/*.png
+03APE-Grupal/graficas_mm1.png
+04APE-Grupal/APE04_Java_NetLogo/resultados/*.png
+04APE-Grupal/APE04_Java_NetLogo/resultados/ultima_ejecucion_java.txt
+Practica4/resultados_java.csv
+Practica4/grafica_sir_java.png

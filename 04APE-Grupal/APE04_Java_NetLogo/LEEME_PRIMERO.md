@@ -4,7 +4,7 @@ Java genera los datos del SIR. NetLogo solamente los importa y los representa. N
 
 ## Ejecutar ahora en Ubuntu
 
-Descomprime TODO el ZIP. Abre una terminal dentro de APE04_Java_NetLogo y ejecuta:
+Desde la raíz del repositorio, entra a `04APE-Grupal/APE04_Java_NetLogo` y ejecuta:
 
 ```bash
 bash ejecutar.sh --semilla 42 --sin-grafica
@@ -49,7 +49,7 @@ Deten ANIMAR antes de cargar archivos. Puedes ajustar la velocidad desde el cont
 
 ## Tecnologias
 
-Tu Java 21 es compatible. Para recompilar se necesita JDK (`javac --version`). El codigo usa solo la biblioteca estandar de Java; no hay librerias externas, Maven ni Gradle. NetLogo usa su extension csv incorporada. No se necesita Python.
+Se requiere Java 17 o posterior. Para recompilar se necesita JDK (`javac --version`). El codigo usa solo la biblioteca estandar de Java; no hay librerias externas de la aplicacion. Se incorpora un `pom.xml` para compilar y empaquetar con Maven; los scripts existentes siguen disponibles. Consulta `README.md`. NetLogo usa su extension csv incorporada. No se necesita Python.
 
 Se incluyen clases compiladas para Java 17 compatibles con Java 21. Si solo tienes un JRE y no un compilador, ejecuta directamente desde la raiz:
 

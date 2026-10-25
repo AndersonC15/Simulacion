@@ -4,7 +4,7 @@
 
 **Tecnologías:** Python 3 · SimPy · NumPy · Matplotlib · Arquitectura MVC
 
-> **Alcance de este README:** documentación del contenido real de `Practica 3.zip`. Este proyecto muestra tablas en la terminal y gráficas en ventanas de Matplotlib. **No incluye una interfaz de escritorio con Tkinter, clientes individuales moviéndose entre cajas, exportación CSV ni una carpeta de pruebas automatizadas.**
+> **Alcance de este README:** documentación del código actual en `03APE-Grupal/`. Este proyecto muestra tablas en la terminal y gráficas en ventanas de Matplotlib. **No incluye una interfaz de escritorio con Tkinter, clientes individuales moviéndose entre cajas, exportación CSV ni una carpeta de pruebas automatizadas.**
 
 ## Contenido
 
@@ -26,7 +26,7 @@ El propósito es **comparar las métricas del modelo matemático M/M/1 con las e
 
 ### Qué hace el programa
 
-- Ejecuta automáticamente los **tres escenarios** especificados en la práctica.
+- Ejecuta automáticamente los **tres escenarios definidos en el código actual**; el tercero difiere de la guía local, como se indica abajo.
 - Genera tiempos entre llegadas y tiempos de servicio con distribuciones **exponenciales** mediante `random.expovariate`.
 - Utiliza `simpy.Environment` y `simpy.Resource(capacity=1)` para modelar la atención.
 - Calcula las métricas teóricas **ρ, L, Lq, W y Wq**.
@@ -35,13 +35,21 @@ El propósito es **comparar las métricas del modelo matemático M/M/1 con las e
 - Presenta seis gráficas: evolución de la cola y distribución de tiempos de espera para cada escenario.
 - Guarda el conjunto de gráficas estáticas en **`graficas_mm1.png`**.
 
-### Escenarios utilizados
+### Escenarios de la guía y del código actual
 
-| Escenario | Tasa de llegadas (λ) | Tasa de servicio (μ) | Condición |
-|:--|--:|--:|:--|
-| 1 | 2.0 | 3.0 | Sistema estable |
-| 2 | 2.5 | 3.0 | Mayor utilización |
-| 3 | 2.9 | 3.0 | Cerca de saturación |
+| Escenario | λ en la guía local | λ ejecutado por el código | μ | Condición |
+|:--|--:|--:|--:|:--|
+| 1 | 2.0 | 2.0 | 3.0 | Sistema estable |
+| 2 | 2.5 | 2.5 | 3.0 | Mayor utilización |
+| 3 | 2.9 | 2.99999 | 3.0 | Cerca de saturación |
+
+El PDF local de la semana 3 pide λ=2.9 para el tercer escenario, mientras que
+`src/models/m_model.py` contiene λ=2.99999. Se documenta esa diferencia y se
+conserva el algoritmo durante esta actualización del portafolio. El valor del
+código está mucho más cerca de μ: sus métricas estacionarias pueden ser muy
+superiores a las estimaciones de una corrida finita de 20000 unidades. No se
+presenta 2.99999 como dato oficial ni se afirma cumplimiento literal de ese
+escenario de la guía.
 
 **Parámetros programados:** tiempo de simulación `20000` unidades y semilla aleatoria `42`. Son valores definidos en el código, **no campos editables de una interfaz gráfica**.
 
@@ -52,13 +60,13 @@ El propósito es **comparar las métricas del modelo matemático M/M/1 con las e
 | Herramienta | ¿Para qué se utiliza? |
 |:--|:--|
 | **Python 3** | Lenguaje principal de la aplicación. |
-| **SimPy ≥ 4.0** | Motor de simulación de eventos discretos: procesos, tiempos y recurso de atención. |
-| **NumPy ≥ 1.24** | Preparación de arreglos e índices para las animaciones y gráficas. |
-| **Matplotlib ≥ 3.7** | Animación de cola, histogramas, gráficas y exportación PNG. |
+| **SimPy 4.1.2** | Motor de simulación de eventos discretos: procesos, tiempos y recurso de atención. |
+| **NumPy 2.5.4** | Preparación de arreglos e índices para las animaciones y gráficas. |
+| **Matplotlib 3.11.2** | Animación de cola, histogramas, gráficas y exportación PNG. |
 | **`random` (Python)** | Generación pseudoaleatoria de tiempos exponenciales mediante `expovariate`. |
 | **`dataclasses` (Python)** | Agrupación sencilla de escenarios, métricas y resultados. |
 
-Las versiones indicadas son los **mínimos declarados por `requirements.txt`**; no son versiones fijas ni una certificación de compatibilidad en todos los sistemas.
+Las versiones indicadas están fijadas en `requirements.txt` para reproducir el entorno comprobado. NumPy 2.5.4 requiere Python ≥3.12 según sus metadatos. La comprobación de esta actualización utiliza Python 3.14.4 en Linux; no certifica todos los sistemas. El manifiesto incluye las dependencias transitivas obtenidas con `python -m pip freeze` en un entorno limpio de esta práctica.
 
 Este proyecto **no requiere** Docker, una base de datos, un servidor web, credenciales ni variables `.env`.
 
@@ -68,7 +76,7 @@ Este proyecto **no requiere** Docker, una base de datos, un servidor web, creden
 
 ### Requisitos previos
 
-- Tener instalado **Python 3** y acceso a una terminal.
+- Tener instalado **Python 3.12 o posterior** y acceso a una terminal.
 - Contar con `pip` y soporte para crear entornos virtuales con `venv`.
 - Tener un entorno de escritorio disponible para abrir las ventanas de Matplotlib.
 - Conexión a Internet durante la primera instalación de bibliotecas.
@@ -77,10 +85,10 @@ Este proyecto **no requiere** Docker, una base de datos, un servidor web, creden
 
 ### 3.1. Linux (Ubuntu / Debian)
 
-Descomprime `Practica 3.zip`, abre una terminal y entra a la carpeta:
+Desde la raíz del repositorio, entra a la carpeta real:
 
 ```bash
-cd "Practica 3"
+cd 03APE-Grupal
 ```
 
 Si no tienes instalados los componentes de Python o el soporte gráfico de Tk:
@@ -108,7 +116,7 @@ python -m src.main
 
 ### 3.2. Windows (PowerShell)
 
-Instala Python 3 desde [python.org](https://www.python.org/downloads/) si aún no lo tienes. Abre PowerShell dentro de la carpeta extraída `Practica 3`, donde se encuentra `requirements.txt`.
+Instala Python 3 desde [python.org](https://www.python.org/downloads/) si aún no lo tienes. Abre PowerShell dentro de la carpeta `03APE-Grupal` del repositorio, donde se encuentra `requirements.txt`.
 
 ```powershell
 py -3 -m venv .venv
@@ -124,15 +132,26 @@ Si el comando `py` no existe, comprueba la instalación de Python e intenta `pyt
 
 Instala una versión actual de Python 3 si aún no está disponible; puedes obtenerla desde [python.org](https://www.python.org/downloads/macos/). Algunas instalaciones de Python requieren componentes gráficos adicionales para mostrar ventanas; comprueba que tu instalación soporte Matplotlib con un backend interactivo.
 
-Desde la carpeta extraída:
+Desde la raíz del repositorio:
 
 ```bash
-cd "Practica 3"
+cd 03APE-Grupal
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python -m src.main
 ```
+
+### Ejecución sin escritorio
+
+```bash
+MPLBACKEND=Agg python -m src.main
+```
+
+En Linux este comando ejecuta los tres escenarios y genera `graficas_mm1.png`
+sin abrir ventanas; la animación no se ve con Agg. Se probó en una copia
+temporal para conservar la imagen versionada. La ejecución gráfica real en
+Windows/macOS no se comprobó durante esta actualización.
 
 ### Ejecutarlo otra vez
 
@@ -183,16 +202,16 @@ TIEMPO_SIMULACION = 20000
 SEMILLA = 42
 ```
 
-Para cambiar los escenarios, modifica `construir_escenarios()` en `src/models/m_model.py`, pero conserva los tres escenarios oficiales para entregar la práctica.
+Los escenarios están en `construir_escenarios()` de `src/models/m_model.py`. Antes de entregar, revisa la diferencia del tercer escenario frente al PDF local indicada arriba. Esta actualización documental no modifica ese código.
 
 ---
 
 ## 5. Estructura del proyecto
 
 ```text
-Practica 3/
+03APE-Grupal/
 ├── requirements.txt               # SimPy, NumPy y Matplotlib
-├── graficas_mm1.png               # Imagen presente en el ZIP original
+├── graficas_mm1.png               # Imagen de ejemplo versionada
 └── src/
     ├── __init__.py
     ├── main.py                    # Punto de entrada del programa
@@ -207,7 +226,7 @@ Practica 3/
         └── m_view.py              # Tablas, gráficas y animación
 ```
 
-El archivo ZIP de origen también contiene carpetas `__pycache__/` generadas por Python, que **no son necesarias para ejecutar el proyecto y no conviene subir a GitHub**.
+Las carpetas `__pycache__/` generadas por Python no son necesarias para ejecutar el proyecto y están excluidas de Git junto con los entornos virtuales.
 
 ### Arquitectura MVC
 
@@ -264,7 +283,7 @@ Conviene revisar estas consideraciones antes de usar los resultados en un inform
 - Los cambios de tamaño de cola se registran en algunos instantes de ejecución del proceso y deben revisarse si se requiere medir el promedio temporal exacto de la cola.
 - La semilla se reinicia con el mismo valor **42** en cada escenario, de acuerdo con el código actual.
 
-Por estas razones, **no debe asumirse que las estimaciones experimentales de este ZIP ya están completamente validadas matemáticamente**. Las fórmulas teóricas sí están explícitas en el modelo. La animación representa los registros existentes, no un seguimiento individual completo y sincronizado de todos los clientes.
+Por estas razones, **no debe asumirse que las estimaciones experimentales de esta implementación ya están completamente validadas matemáticamente**. Las fórmulas teóricas sí están explícitas en el modelo. La animación representa los registros existentes, no un seguimiento individual completo y sincronizado de todos los clientes.
 
 ---
 
@@ -284,13 +303,13 @@ Para comprobar la sintaxis de los módulos:
 python -m compileall -q src
 ```
 
-**Nota:** el ZIP proporcionado **no contiene una carpeta `tests/` ni pruebas automatizadas**, por lo que no corresponde afirmar que pasó un conjunto de pruebas unitarias. Esta comprobación de sintaxis no sustituye una validación de la simulación.
+**Nota:** esta práctica **no contiene una carpeta `tests/` ni pruebas automatizadas**, por lo que no corresponde afirmar que pasó un conjunto de pruebas unitarias. Esta comprobación de sintaxis no sustituye una validación de la simulación.
 
 ### Solución de problemas frecuentes
 
 | Problema | Qué revisar |
 |:--|:--|
-| `ModuleNotFoundError: No module named 'src'` | Ejecuta `python -m src.main` desde la carpeta **Practica 3**, no desde `src/`. |
+| `ModuleNotFoundError: No module named 'src'` | Ejecuta `python -m src.main` desde la carpeta **03APE-Grupal**, no desde `src/`. |
 | `ModuleNotFoundError: No module named 'simpy'` | Activa el entorno correcto e instala `python -m pip install -r requirements.txt`. |
 | No aparecen las ventanas | Comprueba que estés en una sesión gráfica y que Matplotlib tenga un backend interactivo; en Ubuntu puede hacer falta `python3-tk`. |
 | El programa parece detenido | Revisa si la ventana de animación está abierta. Al cerrarla, continúa la visualización de las gráficas estáticas. |
@@ -321,11 +340,11 @@ Al subir el trabajo, conserva `src/`, `requirements.txt` y este `README.md`. No 
 
 ### Declaración de uso de IA
 
-Este README se preparó con asistencia de ChatGPT a partir de la inspección del código fuente de `Practica 3.zip` y de los requisitos de documentación suministrados. **No constituye una declaración sobre la autoría ni el porcentaje de IA del resto del proyecto.** El equipo debe registrar de manera veraz las herramientas, prompts, archivos afectados y revisiones humanas efectuadas, conforme a las instrucciones del docente.
+Este README ya incluía una declaración de asistencia de ChatGPT. En esta sesión, Codex inspeccionó el código actual del repositorio para corregir rutas, versiones y el tercer escenario, completar README de carpetas y revisar los manifiestos. Se conservan los algoritmos existentes. **No constituye una declaración sobre la autoría ni el porcentaje de IA del resto del proyecto.** El equipo debe registrar de manera veraz las herramientas, prompts, archivos afectados y revisiones humanas efectuadas, conforme a las instrucciones del docente.
 
 ### Licencia
 
-El ZIP proporcionado **no incluye un archivo de licencia**. Por tanto, no se declara aquí una licencia de software que sus integrantes no hayan elegido.
+Esta carpeta **no incluye un archivo de licencia**. Por tanto, no se declara aquí una licencia de software que sus integrantes no hayan elegido.
 
 ---
 
