@@ -1,0 +1,67 @@
+; Una unica vista, con posiciones fijas. No hay contactos, movimientos ni contagios NetLogo.
+to preparar-personas
+  set lectores-compartidos? mismo-lector?
+  ask turtles [ die ]
+  ask patches [ set pcolor [224 247 239] ]
+  ask patches with [pxcor = 99 or pxcor = 100] [ set pcolor [11 18 32] ]
+  if detalle-a? [ crear-personas "A" (sum but-first first datos-java) 0 ]
+  if detalle-b? [ crear-personas "B" (sum but-first first datos-referencia) 100 ]
+  create-rotulos 1 [ setxy 48 47 set size 0 set label-color [11 18 32] set label "A" ]
+  create-rotulos 1 [ setxy 148 47 set size 0 set label-color [11 18 32] set label "B" ]
+  actualizar-personas
+end
+
+to crear-personas [escenario n inicio-x]
+  let columnas ceiling sqrt (n * 2)
+  let filas ceiling (n / columnas)
+  let celda min (list (94 / columnas) (40 / filas))
+  foreach (range n) [id-real ->
+    create-personas 1 [
+      set ejecucion escenario
+      set identificador id-real
+      set estado-persona "SUSCEPTIBLE"
+      set shape "person"
+      set heading 0
+      set size celda * 0.85
+      setxy (inicio-x + 3 + (id-real mod columnas + 0.5) * (94 / columnas))
+            (43 - (floor (id-real / columnas) + 0.5) * (40 / filas))
+    ]
+  ]
+end
+
+to actualizar-personas
+  if detalle-a? [
+    let t min (list indice (length datos-java - 1))
+    if paso-individual-java != t [
+      let estados leer-estados-hasta archivo-individual-java (sum but-first first datos-java) t paso-individual-java
+      set estados-individual-java estados
+      ask personas with [ejecucion = "A"] [ set estado-persona item identificador estados set color color-estado estado-persona ]
+      set paso-individual-java t
+    ]
+  ]
+  if detalle-b? [
+    let t min (list indice (length datos-referencia - 1))
+    if paso-individual-referencia != t [
+      let estados ifelse-value lectores-compartidos?
+        [estados-individual-java]
+        [leer-estados-hasta archivo-individual-referencia (sum but-first first datos-referencia) t paso-individual-referencia]
+      ask personas with [ejecucion = "B"] [ set estado-persona item identificador estados set color color-estado estado-persona ]
+      set paso-individual-referencia t
+    ]
+  ]
+  ask rotulos with [xcor < 100] [ set label etiqueta-personas "A" datos-java archivo-individual-java ]
+  ask rotulos with [xcor >= 100] [ set label etiqueta-personas "B" datos-referencia archivo-individual-referencia ]
+end
+
+to-report etiqueta-personas [escenario serie archivo]
+  if empty? serie [ report (word "Zona " escenario " | sin cargar") ]
+  if archivo = "" [ report (word "Zona " escenario " | detalle individual no disponible") ]
+  report (word "Zona " escenario " | t=" min (list indice (length serie - 1)) " | S / I / R: colores de las curvas")
+end
+
+to-report color-estado [estado-real]
+  if estado-real = "SUSCEPTIBLE" [ report [0 171 77] ]
+  if estado-real = "INFECTADO" [ report [11 18 32] ]
+  if estado-real = "RECUPERADO" [ report [130 154 144] ]
+  error "Estado individual desconocido."
+end

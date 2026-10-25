@@ -1,99 +1,130 @@
-<?xml version='1.0' encoding='utf-8'?>
-<model version="NetLogo 7.0.4" snapToGrid="false">
+<?xml version="1.0" encoding="utf-8" standalone="no"?><model snapToGrid="false" version="NetLogo 7.0.4">
   <code>extensions [csv]
-__includes ["datos.nls" "vista.nls" "controlador.nls"]
-globals [datos-java datos-referencia nombre-java nombre-referencia indice estado-mensaje]
+__includes ["datos.nls" "individuos.nls" "personas.nls" "vista.nls" "controlador.nls"]
+globals [datos-java datos-referencia nombre-java nombre-referencia indice estado-mensaje
+ archivo-individual-java archivo-individual-referencia paso-individual-java paso-individual-referencia lectores-compartidos? estados-individual-java]
+breed [personas persona]
+breed [rotulos rotulo]
+personas-own [ejecucion identificador estado-persona]
 </code>
   <widgets>
-    <button x="12" y="8" width="218" height="34" forever="false" kind="Observer" disableUntilTicks="false" display="ABRIR CSV">elegir-java</button>
-    <button x="242" y="8" width="218" height="34" forever="false" kind="Observer" disableUntilTicks="false" display="COMPARAR CSV">elegir-referencia</button>
-    <button x="472" y="8" width="218" height="34" forever="false" kind="Observer" disableUntilTicks="false" display="REINICIAR">reiniciar</button>
-    <button x="702" y="8" width="218" height="34" forever="true" kind="Observer" disableUntilTicks="false" display="ANIMAR / PAUSAR">animar</button>
-    <button x="932" y="8" width="218" height="34" forever="false" kind="Observer" disableUntilTicks="false" display="VER COMPLETO">mostrar-completo</button>
-    <monitor x="12" y="50" width="136" height="48" precision="0" fontSize="11" display="t A">valor-java 0</monitor>
-    <monitor x="156" y="50" width="136" height="48" precision="0" fontSize="11" display="S A">valor-java 1</monitor>
-    <monitor x="300" y="50" width="136" height="48" precision="0" fontSize="11" display="I A">valor-java 2</monitor>
-    <monitor x="444" y="50" width="136" height="48" precision="0" fontSize="11" display="R A">valor-java 3</monitor>
-    <monitor x="588" y="50" width="136" height="48" precision="0" fontSize="11" display="t B">valor-referencia 0</monitor>
-    <monitor x="732" y="50" width="136" height="48" precision="0" fontSize="11" display="S B">valor-referencia 1</monitor>
-    <monitor x="876" y="50" width="136" height="48" precision="0" fontSize="11" display="I B">valor-referencia 2</monitor>
-    <monitor x="1020" y="50" width="136" height="48" precision="0" fontSize="11" display="R B">valor-referencia 3</monitor>
-    <plot x="12" y="106" width="570" height="210" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Escenario A" xAxis="Tiempo (pasos)" yAxis="Personas" sizeVersion="1">
-      <setup />
-      <update />
-      <pen display="S" interval="1.0" mode="0" color="-16733363" legend="true">
-        <setup />
-        <update />
+    <button disableUntilTicks="false" display="ABRIR CSV" forever="false" height="34" kind="Observer" width="218" x="12" y="8">elegir-java</button>
+    <button disableUntilTicks="false" display="COMPARAR CSV" forever="false" height="34" kind="Observer" width="218" x="242" y="8">elegir-referencia</button>
+    <button disableUntilTicks="false" display="REINICIAR" forever="false" height="34" kind="Observer" width="218" x="472" y="8">reiniciar</button>
+    <button disableUntilTicks="false" display="ANIMAR / PAUSAR" forever="true" height="34" kind="Observer" width="218" x="702" y="8">animar</button>
+    <button disableUntilTicks="false" display="VER COMPLETO" forever="false" height="34" kind="Observer" width="218" x="932" y="8">mostrar-completo</button>
+    <monitor display="t A" fontSize="11" height="48" precision="0" width="136" x="12" y="50">valor-java 0</monitor>
+    <monitor display="S A" fontSize="11" height="48" precision="0" width="136" x="156" y="50">valor-java 1</monitor>
+    <monitor display="I A" fontSize="11" height="48" precision="0" width="136" x="300" y="50">valor-java 2</monitor>
+    <monitor display="R A" fontSize="11" height="48" precision="0" width="136" x="444" y="50">valor-java 3</monitor>
+    <monitor display="t B" fontSize="11" height="48" precision="0" width="136" x="588" y="50">valor-referencia 0</monitor>
+    <monitor display="S B" fontSize="11" height="48" precision="0" width="136" x="732" y="50">valor-referencia 1</monitor>
+    <monitor display="I B" fontSize="11" height="48" precision="0" width="136" x="876" y="50">valor-referencia 2</monitor>
+    <monitor display="R B" fontSize="11" height="48" precision="0" width="136" x="1020" y="50">valor-referencia 3</monitor>
+    <plot autoPlotX="false" autoPlotY="false" display="Escenario A" height="210" legend="true" sizeVersion="1" width="570" x="12" xAxis="Tiempo (pasos)" xMax="100" xMin="0" y="106" yAxis="Personas" yMax="100" yMin="0">
+      <setup/>
+      <update/>
+      <pen color="-16733363" display="S" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
-      <pen display="I" interval="1.0" mode="0" color="-16051680" legend="true">
-        <setup />
-        <update />
+      <pen color="-16051680" display="I" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
-      <pen display="R" interval="1.0" mode="0" color="-8217968" legend="true">
-        <setup />
-        <update />
-      </pen>
-    </plot>
-    <plot x="594" y="106" width="570" height="210" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Escenario B" xAxis="Tiempo (pasos)" yAxis="Personas" sizeVersion="1">
-      <setup />
-      <update />
-      <pen display="S" interval="1.0" mode="0" color="-16733363" legend="true">
-        <setup />
-        <update />
-      </pen>
-      <pen display="I" interval="1.0" mode="0" color="-16051680" legend="true">
-        <setup />
-        <update />
-      </pen>
-      <pen display="R" interval="1.0" mode="0" color="-8217968" legend="true">
-        <setup />
-        <update />
+      <pen color="-8217968" display="R" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
     </plot>
-    <plot x="12" y="326" width="376" height="180" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Susceptibles: A / B" xAxis="Tiempo (pasos)" yAxis="Personas" sizeVersion="1">
-      <setup />
-      <update />
-      <pen display="A" interval="1.0" mode="0" color="-16733363" legend="true">
-        <setup />
-        <update />
+    <plot autoPlotX="false" autoPlotY="false" display="Escenario B" height="210" legend="true" sizeVersion="1" width="570" x="594" xAxis="Tiempo (pasos)" xMax="100" xMin="0" y="106" yAxis="Personas" yMax="100" yMin="0">
+      <setup/>
+      <update/>
+      <pen color="-16733363" display="S" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
-      <pen display="B" interval="1.0" mode="0" color="-16051680" legend="true">
-        <setup />
-        <update />
+      <pen color="-16051680" display="I" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
-    </plot>
-    <plot x="400" y="326" width="376" height="180" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Infectados: A / B" xAxis="Tiempo (pasos)" yAxis="Personas" sizeVersion="1">
-      <setup />
-      <update />
-      <pen display="A" interval="1.0" mode="0" color="-16733363" legend="true">
-        <setup />
-        <update />
-      </pen>
-      <pen display="B" interval="1.0" mode="0" color="-16051680" legend="true">
-        <setup />
-        <update />
+      <pen color="-8217968" display="R" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
     </plot>
-    <plot x="788" y="326" width="376" height="180" xMin="0" xMax="100" yMin="0" yMax="100" autoPlotX="false" autoPlotY="false" legend="true" display="Recuperados: A / B" xAxis="Tiempo (pasos)" yAxis="Personas" sizeVersion="1">
-      <setup />
-      <update />
-      <pen display="A" interval="1.0" mode="0" color="-16733363" legend="true">
-        <setup />
-        <update />
+    <plot autoPlotX="false" autoPlotY="false" display="Susceptibles: A / B" height="180" legend="true" sizeVersion="1" width="376" x="12" xAxis="Tiempo (pasos)" xMax="100" xMin="0" y="326" yAxis="Personas" yMax="100" yMin="0">
+      <setup/>
+      <update/>
+      <pen color="-16733363" display="A" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
-      <pen display="B" interval="1.0" mode="0" color="-16051680" legend="true">
-        <setup />
-        <update />
+      <pen color="-16051680" display="B" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
       </pen>
     </plot>
-    <monitor x="12" y="516" width="1152" height="48" precision="0" fontSize="11" display="Estado">estado-mensaje</monitor>
-    <view x="12" y="570" width="1" height="1" minPxcor="0" maxPxcor="0" minPycor="0" maxPycor="0" patchSize="1" wrappingAllowedX="false" wrappingAllowedY="false" fontSize="10" updateMode="0" showTickCounter="false" frameRate="30" />
+    <plot autoPlotX="false" autoPlotY="false" display="Infectados: A / B" height="180" legend="true" sizeVersion="1" width="376" x="400" xAxis="Tiempo (pasos)" xMax="100" xMin="0" y="326" yAxis="Personas" yMax="100" yMin="0">
+      <setup/>
+      <update/>
+      <pen color="-16733363" display="A" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
+      </pen>
+      <pen color="-16051680" display="B" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
+      </pen>
+    </plot>
+    <plot autoPlotX="false" autoPlotY="false" display="Recuperados: A / B" height="180" legend="true" sizeVersion="1" width="376" x="788" xAxis="Tiempo (pasos)" xMax="100" xMin="0" y="326" yAxis="Personas" yMax="100" yMin="0">
+      <setup/>
+      <update/>
+      <pen color="-16733363" display="A" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
+      </pen>
+      <pen color="-16051680" display="B" interval="1.0" legend="true" mode="0">
+        <setup/>
+        <update/>
+      </pen>
+    </plot>
+    <monitor display="Estado" fontSize="11" height="48" precision="0" width="1152" x="12" y="516">estado-mensaje</monitor>
+    <view fontSize="10" frameRate="30" height="288" maxPxcor="199" maxPycor="49" minPxcor="0" minPycor="0" patchSize="5.76" showTickCounter="false" updateMode="0" width="1152" wrappingAllowedX="false" wrappingAllowedY="false" x="12" y="576"/>
   </widgets>
-  <info>Java calcula el SIR. NetLogo valida e importa los CSV y representa sus filas. A y B son dos ejecuciones Java. Abrir el visor con java -jar sir.jar evita las pestanas del editor NetLogo.</info>
+  <info>Java calcula el SIR y exporta estados reales. NetLogo valida e importa CSV agregados e individuales; reproduce sin simular. Cinco graficas y una unica vista de personas dividida en A/B. Las posiciones fijas no son distancias fisicas. Los CSV antiguos sin detalle conservan sus curvas. La comparacion de ejecuciones Java es una funcion adicional.</info>
   <turtleShapes>
-    <shape name="default" rotatable="true" editableColorIndex="0">
-      <circle color="-7500403" filled="true" marked="true" x="0" y="0" diameter="300" />
+    <shape editableColorIndex="0" name="default" rotatable="true">
+      <circle color="-7500403" diameter="300" filled="true" marked="true" x="0" y="0"/>
     </shape>
-  </turtleShapes>
+  <shape editableColorIndex="0" name="person" rotatable="false">
+      <circle color="-1920102913" diameter="80" filled="true" marked="true" x="110" y="5"/>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"/>
+        <point x="120" y="195"/>
+        <point x="90" y="285"/>
+        <point x="105" y="300"/>
+        <point x="135" y="300"/>
+        <point x="150" y="225"/>
+        <point x="165" y="300"/>
+        <point x="195" y="300"/>
+        <point x="210" y="285"/>
+        <point x="180" y="195"/>
+        <point x="195" y="90"/>
+      </polygon>
+      <rectangle color="-1920102913" endX="172" endY="94" filled="true" marked="true" startX="127" startY="79"/>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="195" y="90"/>
+        <point x="240" y="150"/>
+        <point x="225" y="180"/>
+        <point x="165" y="105"/>
+      </polygon>
+      <polygon color="-1920102913" filled="true" marked="true">
+        <point x="105" y="90"/>
+        <point x="60" y="150"/>
+        <point x="75" y="180"/>
+        <point x="135" y="105"/>
+      </polygon>
+    </shape></turtleShapes>
   <previewCommands>startup</previewCommands>
 </model>

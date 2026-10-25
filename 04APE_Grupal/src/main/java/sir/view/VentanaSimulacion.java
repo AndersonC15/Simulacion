@@ -4,6 +4,7 @@ import sir.Opciones;
 import sir.controller.ControladorSIR;
 import sir.io.ExportadorCsv;
 import sir.io.LectorCsv;
+import sir.io.LectorIndividuos;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -12,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.*;
 
 /** Vista Swing con graficas reales de NetLogo, sin las pestanas del editor. */
@@ -23,14 +24,15 @@ public final class VentanaSimulacion extends JFrame {
     private final Path raiz;
     private final PuenteNetLogo netlogo;
     private final ExecutorService tareas=Executors.newSingleThreadExecutor();
-    private final AtomicBoolean ocupado=new AtomicBoolean();
+    private final AtomicInteger pendientes=new AtomicInteger();
     private final Map<String,JTextField> campos=new LinkedHashMap<>();
     private final JLabel estado=new JLabel("Abriendo NetLogo...");
     private final JButton reproducir=new JButton("PAUSAR");
     private final JSlider velocidad=new JSlider(20,500,100);
     private final Timer reloj;
-    private boolean enMarcha;
-    private boolean cerrado;
+    private volatile boolean enMarcha=true;
+    private volatile boolean cerrado;
+    private volatile long revisionReproduccion;
 
     public VentanaSimulacion(Path raiz,Path csv) throws Exception {
         super("APE 04 | SIR - Java + NetLogo");
@@ -53,7 +55,7 @@ public final class VentanaSimulacion extends JFrame {
         controles.add(boton("ABRIR CSV",()->elegir(false)));
         JButton comparar=boton("COMPARAR CON OTRO CSV",()->elegir(true));
         comparar.setToolTipText("Carga otra ejecucion de Java en Escenario B y compara S, I y R."); controles.add(comparar);
-        controles.add(boton("QUITAR COMPARACION",()->orden("quitar-referencia")));
+        controles.add(boton("QUITAR COMPARACION",()->{ pausa(); orden("quitar-referencia"); }));
         controles.add(boton("REINICIAR",()->{ pausa(); orden("reiniciar"); }));
         reproducir.setName("PAUSAR"); reproducir.addActionListener(e->alternar()); controles.add(reproducir);
         controles.add(boton("UN PASO",()->{ pausa(); orden("avanzar"); }));
@@ -68,7 +70,6 @@ public final class VentanaSimulacion extends JFrame {
         netlogo=new PuenteNetLogo(this);
         JScrollPane scroll=new JScrollPane(netlogo.componente()); scroll.setBorder(null); scroll.getViewport().setBackground(FONDO);
         add(scroll,BorderLayout.CENTER);
-        netlogo.abrir(raiz.resolve("netlogo/modelo_sir_netlogo.nlogox").toString());
         reloj=new Timer(100,e->tick());
         pack();
         Dimension pantalla=Toolkit.getDefaultToolkit().getScreenSize();
@@ -77,9 +78,11 @@ public final class VentanaSimulacion extends JFrame {
         addWindowListener(new WindowAdapter(){ @Override public void windowClosing(WindowEvent e){ cerrar(); } });
         getRootPane().registerKeyboardAction(e->cerrar(),KeyStroke.getKeyStroke("control Q"),JComponent.WHEN_IN_FOCUSED_WINDOW);
         ejecutar(()->{
+            netlogo.abrir(raiz.resolve("netlogo/modelo_sir_netlogo.nlogox").toString());
+            SwingUtilities.invokeLater(()->scroll.revalidate());
             netlogo.ordenar("startup");
-            cargar(csv,false);
-            SwingUtilities.invokeLater(()->{ enMarcha=true; reproducir.setText("PAUSAR"); reloj.start(); });
+            cargarArchivos(csv,false);
+            iniciarSiVigente(0);
         });
     }
     private JButton boton(String texto,Runnable accion) {
@@ -92,32 +95,67 @@ public final class VentanaSimulacion extends JFrame {
         if (componente instanceof Container) { for (Component hijo:((Container)componente).getComponents()) { tema(hijo); } }
     }
     private void relojDelay() { if (reloj!=null) { reloj.setDelay(velocidad.getValue()); } }
-    private void pausa() { enMarcha=false; reloj.stop(); reproducir.setText("CONTINUAR"); }
+    private void pausa() { revisionReproduccion++; enMarcha=false; reloj.stop(); reproducir.setText("CONTINUAR"); }
+    private void iniciarSiVigente(long revision) {
+        SwingUtilities.invokeLater(()->{
+            if (cerrado || revision != revisionReproduccion) { return; }
+            enMarcha=true; reproducir.setText("PAUSAR"); reloj.start();
+        });
+    }
     private void alternar() {
         if (enMarcha) { pausa(); return; }
+        long revision=++revisionReproduccion;
+        enMarcha=true; reproducir.setText("PAUSAR");
         ejecutar(()->{
             if (Boolean.TRUE.equals(netlogo.consultar("terminado?"))) { netlogo.ordenar("reiniciar"); }
-            SwingUtilities.invokeLater(()->{ enMarcha=true; reproducir.setText("PAUSAR"); reloj.start(); });
+            iniciarSiVigente(revision);
         });
     }
     private void tick() {
-        if (!enMarcha) { return; }
+        if (!enMarcha || pendientes.get()!=0) { return; }
+        long revision=revisionReproduccion;
         ejecutar(()->{
+            if (!enMarcha || revision != revisionReproduccion) { return; }
             netlogo.ordenar("avanzar");
-            if (Boolean.TRUE.equals(netlogo.consultar("terminado?"))) { SwingUtilities.invokeLater(this::pausa); }
+            if (Boolean.TRUE.equals(netlogo.consultar("terminado?"))) {
+                SwingUtilities.invokeLater(()->{ if (revision==revisionReproduccion) { pausa(); } });
+            }
         });
     }
     private void orden(String codigo) { ejecutar(()->netlogo.ordenar(codigo)); }
     private void elegir(boolean referencia) {
         pausa();
         JFileChooser selector=new JFileChooser(raiz.resolve("netlogo/datos").toFile());
-        selector.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Datos Java (*.csv)","csv"));
+        selector.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("CSV agregado Java (no *_individuos.csv)","csv"));
         if (selector.showOpenDialog(this)==JFileChooser.APPROVE_OPTION) {
-            Path ruta=selector.getSelectedFile().toPath(); ejecutar(()->cargar(ruta,referencia));
+            Path ruta=selector.getSelectedFile().toPath(); ejecutar(()->cargarArchivos(ruta,referencia));
         }
     }
     public void cargar(Path ruta,boolean referencia) throws Exception {
-        new LectorCsv().leer(ruta); // Rechaza datos invalidos antes de modificar NetLogo.
+        if (cerrado) { throw new IllegalStateException("El visor esta cerrado."); }
+        if (SwingUtilities.isEventDispatchThread()) {
+            pausa();
+            ejecutar(()->cargarArchivos(ruta,referencia));
+        } else {
+            SwingUtilities.invokeAndWait(this::pausa);
+            pendientes.incrementAndGet();
+            var carga=tareas.submit(()->{
+                try { cargarArchivos(ruta,referencia); }
+                finally { pendientes.decrementAndGet(); }
+                return null;
+            });
+            try { carga.get(); }
+            catch (java.util.concurrent.ExecutionException error) {
+                if (error.getCause() instanceof Exception causa) { throw causa; }
+                throw error;
+            }
+        }
+    }
+    private void cargarArchivos(Path ruta,boolean referencia) throws Exception {
+        // Ambas validaciones terminan antes de sustituir el escenario visible.
+        ruta=ruta.toRealPath();
+        var serie=new LectorCsv().leer(ruta);
+        new LectorIndividuos().validar(ruta,serie);
         netlogo.ordenar((referencia?"cargar-referencia-desde ":"cargar-java-desde ")+PuenteNetLogo.texto(ruta.toAbsolutePath().toString()));
         if (!referencia) {
             try { leerParametros(ruta); }
@@ -138,14 +176,16 @@ public final class VentanaSimulacion extends JFrame {
     }
     private void generar() {
         pausa();
+        long revision=revisionReproduccion;
         java.util.List<String> args=new java.util.ArrayList<>();
         campos.forEach((nombre,campo)->{ args.add("--"+nombre); args.add(campo.getText().trim()); });
         try {
             Opciones opciones=Opciones.leer(args.toArray(String[]::new),raiz);
+            enMarcha=true; reproducir.setText("PAUSAR");
             ejecutar(()->{
                 new ControladorSIR(new ExportadorCsv()).ejecutar(opciones.parametros(),opciones.semilla(),opciones.csv());
-                cargar(opciones.csv(),false);
-                SwingUtilities.invokeLater(()->{ enMarcha=true; reproducir.setText("PAUSAR"); reloj.start(); });
+                cargarArchivos(opciones.csv(),false);
+                iniciarSiVigente(revision);
             });
         } catch (Exception e) { mensaje("Entrada invalida: "+e.getMessage()); }
     }
@@ -167,11 +207,14 @@ public final class VentanaSimulacion extends JFrame {
     @FunctionalInterface private interface Trabajo { void ejecutar() throws Exception; }
     private void ejecutar(Trabajo trabajo) {
         if (cerrado) { return; }
-        if (!ocupado.compareAndSet(false,true)) { return; } // El reloj omite pulsos mientras se carga/genera.
+        pendientes.incrementAndGet();
         tareas.submit(()->{
-            try { trabajo.ejecutar(); mensaje(String.valueOf(netlogo.consultar("estado-mensaje"))); }
+            try {
+                if (cerrado) { return; }
+                trabajo.ejecutar(); mensaje(String.valueOf(netlogo.consultar("estado-mensaje")));
+            }
             catch (Exception e) { mensaje("No se aplico: "+e.getMessage()); SwingUtilities.invokeLater(this::pausa); }
-            finally { ocupado.set(false); }
+            finally { pendientes.decrementAndGet(); }
         });
     }
     private void mensaje(String texto) {
@@ -184,7 +227,7 @@ public final class VentanaSimulacion extends JFrame {
             finally { tareas.shutdown(); SwingUtilities.invokeLater(this::dispose); } });
     }
     public PuenteNetLogo puente() { return netlogo; }
-    public boolean ocupado() { return ocupado.get(); }
+    public boolean ocupado() { return pendientes.get()!=0; }
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         SwingUtilities.invokeAndWait(()->{

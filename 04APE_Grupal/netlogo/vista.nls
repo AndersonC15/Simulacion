@@ -1,5 +1,6 @@
 ; Vista: una grafica por escenario y tres comparaciones de sus columnas S/I/R.
 to actualizar-vista
+  cerrar-lecturas
   let limite-x max (list 1 ultimo-indice)
   let limite-y 1
   if not empty? datos-java [ set limite-y max (list limite-y (sum but-first first datos-java)) ]
@@ -11,6 +12,7 @@ to actualizar-vista
     set-plot-y-range 0 limite-y
   ]
   foreach (range (indice + 1)) [t -> agregar-fila t]
+  preparar-personas
   display
 end
 
@@ -50,11 +52,11 @@ to dibujar-comparacion [pluma fila]
 end
 
 to-report valor-java [columna]
-  if empty? datos-java [ report 0 ]
+  if empty? datos-java [ report "sin cargar" ]
   report item columna (item (min (list indice (length datos-java - 1))) datos-java)
 end
 
 to-report valor-referencia [columna]
-  if empty? datos-referencia [ report 0 ]
+  if empty? datos-referencia [ report "sin cargar" ]
   report item columna (item (min (list indice (length datos-referencia - 1))) datos-referencia)
 end

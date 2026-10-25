@@ -1,0 +1,120 @@
+; Detalle real exportado por Java. Solo se conserva un paso por persona (memoria O(N)).
+to-report ruta-individual [ruta]
+  if length ruta < 4 [ report (word ruta "_individuos.csv") ]
+  if not member? (substring ruta (length ruta - 4) length ruta) [".csv" ".CSV" ".CsV" ".cSv" ".csV" ".CSv" ".cSV" ".Csv"] [ report (word ruta "_individuos.csv") ]
+  report (word (substring ruta 0 (length ruta - 4)) "_individuos.csv")
+end
+
+; Detecta tambien alias que el gestor de archivos resuelva al mismo cursor.
+to-report mismo-lector?
+  if not detalle-a? or not detalle-b? [ report false ]
+  file-open archivo-individual-java
+  let cabecera leer-linea-limitada
+  file-open archivo-individual-referencia
+  let siguiente leer-linea-limitada
+  file-close-all
+  report not member? siguiente (list "tiempo,id,estado" "﻿tiempo,id,estado")
+end
+
+to-report validar-individuos [ruta serie]
+  let archivo ruta-individual ruta
+  if not file-exists? archivo [ report "" ]
+  let n sum but-first first serie
+  let anteriores []
+  let caracteres 0
+  carefully [
+    file-open archivo
+    if file-at-end? [ error "El archivo individual esta vacio." ]
+    let cabecera leer-linea-limitada
+    if not empty? cabecera [ if substring cabecera 0 1 = "﻿" [ set cabecera substring cabecera 1 length cabecera ] ]
+    if cabecera != "tiempo,id,estado" [ error "Encabezado individual incorrecto: se espera tiempo,id,estado." ]
+    foreach serie [fila ->
+      let estados []
+      let conteos [0 0 0]
+      foreach (range n) [id-real ->
+        if file-at-end? [ error "Detalle individual truncado: faltan personas o pasos." ]
+        let linea leer-linea-limitada
+        set caracteres caracteres + length linea + 1
+        if caracteres > 536870912 [ error "Detalle individual mayor a 512 MiB." ]
+        let registro registro-individual linea
+        if item 0 registro != item 0 fila or item 1 registro != id-real [ error "Tiempo o ID individual invalido, repetido, ausente o desordenado." ]
+        let estado-real item 2 registro
+        if not empty? anteriores [
+          let previo item id-real anteriores
+          if (previo = "SUSCEPTIBLE" and estado-real = "RECUPERADO") or
+             (previo = "INFECTADO" and estado-real = "SUSCEPTIBLE") or
+             (previo = "RECUPERADO" and estado-real != "RECUPERADO") [ error "Transicion individual incompatible con SIR." ]
+        ]
+        let columna position estado-real ["SUSCEPTIBLE" "INFECTADO" "RECUPERADO"]
+        set conteos replace-item columna conteos (item columna conteos + 1)
+        set estados lput estado-real estados
+      ]
+      if conteos != but-first fila [ error "El detalle individual no coincide con los conteos del CSV agregado." ]
+      set anteriores estados
+    ]
+    if not file-at-end? [ error "Sobran registros en el detalle individual." ]
+    file-close
+  ] [
+    let detalle error-message
+    file-close-all
+    error detalle
+  ]
+  report archivo
+end
+
+to-report registro-individual [linea]
+  let primera-coma position "," linea
+  if primera-coma = false [ error "Cada registro individual requiere tiempo,id,estado." ]
+  let resto substring linea (primera-coma + 1) length linea
+  let segunda-coma position "," resto
+  if segunda-coma = false [ error "Cada registro individual requiere tiempo,id,estado." ]
+  let texto-tiempo substring linea 0 primera-coma
+  let texto-id substring resto 0 segunda-coma
+  let estado-real substring resto (segunda-coma + 1) length resto
+  if not entero-individual? texto-tiempo or not entero-individual? texto-id [ error "Tiempo e ID individuales requieren enteros no negativos." ]
+  if not member? estado-real ["SUSCEPTIBLE" "INFECTADO" "RECUPERADO"] [ error "Estado individual desconocido." ]
+  report (list (read-from-string texto-tiempo) (read-from-string texto-id) estado-real)
+end
+
+to-report entero-individual? [texto]
+  if empty? texto or length texto > 9 [ report false ]
+  let valido true
+  foreach (n-values length texto [i -> substring texto i (i + 1)]) [caracter ->
+    if not member? caracter "0123456789" [ set valido false ]
+  ]
+  report valido
+end
+
+to cerrar-lecturas
+  file-close-all
+  set paso-individual-java -1
+  set paso-individual-referencia -1
+end
+
+; file-open selecciona el archivo y conserva su cursor entre pasos.
+; Reiniciar/cambiar archivos cierra ambos cursores; la siguiente lectura vuelve a t=0.
+to-report leer-estados-hasta [ruta n objetivo anterior]
+  file-open ruta
+  if anterior < 0 [ let cabecera leer-linea-limitada ]
+  let estados []
+  let t anterior + 1
+  while [t <= objetivo] [
+    set estados []
+    foreach (range n) [id-real ->
+      if file-at-end? [ error "El archivo individual cambio o quedo truncado durante la reproduccion." ]
+      let registro registro-individual leer-linea-limitada
+      if item 0 registro != t or item 1 registro != id-real [ error "El detalle individual cambio durante la reproduccion." ]
+      set estados lput (item 2 registro) estados
+    ]
+    set t t + 1
+  ]
+  report estados
+end
+
+to-report detalle-a?
+  report not empty? datos-java and archivo-individual-java != ""
+end
+
+to-report detalle-b?
+  report not empty? datos-referencia and archivo-individual-referencia != ""
+end

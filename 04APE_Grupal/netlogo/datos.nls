@@ -7,7 +7,8 @@ to-report leer-serie [ruta]
     if file-at-end? [ error "El CSV esta vacio." ]
     let cabecera leer-linea-limitada
     if not empty? cabecera [ if (substring cabecera 0 1) = "﻿" [ set cabecera substring cabecera 1 (length cabecera) ] ]
-    if cabecera != "tiempo,susceptibles,infectados,recuperados" [ error "Encabezado CSV incorrecto." ]
+    if cabecera = "tiempo,id,estado" [ error "Seleccionaste el detalle individual. Abre el CSV agregado de la misma ejecucion." ]
+    if cabecera != "tiempo,susceptibles,infectados,recuperados" [ error "Encabezado CSV agregado incorrecto." ]
     let cantidad-caracteres length cabecera
     while [not file-at-end?] [
       let linea leer-linea-limitada
