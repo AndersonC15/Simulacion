@@ -7,3 +7,9 @@ __pycache__/
 resultados/*.png
 resultados/*.json
 resultados/*.csv
+!resultados/comparacion.png
+!resultados/crecimiento.png
+!resultados/decrecimiento.png
+!resultados/constante.png
+!resultados/netlogo_oficial.png
+!resultados/netlogo_oficial.csv
