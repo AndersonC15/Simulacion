@@ -1,6 +1,6 @@
 from decimal import Decimal, localcontext
 from Modelo.parametros import Parametros
-from Modelo.estrategias import Deterministico, Discreto, Estocastico
+from Modelo.estrategias import Deterministico, Discreto, Estocastico, ContinuoEuler
 from Modelo.numeros import ErrorValidacion
 import pytest
 
@@ -35,3 +35,18 @@ def test_estocastico_ruido_controlado_y_recuperacion():
 def test_semilla_reproducible():
     parametros = Parametros(sigma="10")
     assert Estocastico().simular(parametros) == Estocastico().simular(parametros)
+
+
+def test_euler_dos_medios_pasos():
+    serie = ContinuoEuler().simular(Parametros(horizonte="1", dt="0.5"))
+    assert serie.poblaciones[-1] == Decimal("1102.5")
+
+
+def test_euler_ultimo_paso_reducido():
+    serie = ContinuoEuler().simular(Parametros(horizonte="1", dt="0.3"))
+    assert serie.tiempos == tuple(map(Decimal, ("0", ".3", ".6", ".9", "1")))
+
+
+def test_euler_paso_invalido():
+    with pytest.raises(ErrorValidacion):
+        ContinuoEuler().simular(Parametros(tasa="-2", dt="1"))

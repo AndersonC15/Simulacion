@@ -65,3 +65,17 @@ class Estocastico:
             siguiente = sumar(sumar(actual, multiplicar(parametros.tasa, actual)), ruido)
             poblaciones.append(max(Decimal(0), siguiente))
         return Serie("Estocástico", tiempos, tuple(poblaciones))
+
+
+class ContinuoEuler:
+    def simular(self, parametros):
+        tiempos = malla(parametros)
+        poblaciones = [parametros.p0]
+        for anterior, actual in zip(tiempos, tiempos[1:]):
+            paso = sumar(actual, anterior.copy_negate())
+            factor = sumar(Decimal(1), multiplicar(paso, parametros.tasa))
+            if factor < 0:
+                raise ErrorValidacion("Euler requiere 1 + h*r >= 0 en cada paso; reduzca dt para decrecimiento.")
+            incremento = multiplicar(paso, multiplicar(parametros.tasa, poblaciones[-1]))
+            poblaciones.append(sumar(poblaciones[-1], incremento))
+        return Serie("Continuo (Euler, aproximación)", tiempos, tuple(poblaciones))
