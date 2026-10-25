@@ -1,50 +1,24 @@
 # Portafolio de Simulación
 
-Actividades Prácticas Experimentales (APE) de la asignatura de Simulación.
-Cada práctica conserva sus instrucciones, código y entorno de ejecución.
+**Autor:** Anderson Mateo Coello Jaramillo
 
-| Práctica | Contenido comprobado en el código | Instrucciones |
-|---|---|---|
-| [01APE](01APE/) | Índice de lluvia a partir de humedad, nubosidad y temperatura; comparación de pesos y gráficas. | [README](01APE/README.md) |
-| [02APE](02APE/) | Comparación del crecimiento poblacional exponencial, discreto, estocástico y continuo aproximado con Euler; Python, NumPy y Matplotlib. | [README](02APE/README.md) |
-| [03APE-Grupal](03APE-Grupal/) | Líneas de espera M/M/1 con SimPy, métricas teóricas y simuladas, animación y gráficas. | [README](03APE-Grupal/README.md) |
-| [04APE-Grupal](04APE-Grupal/) | SIR estocástico en Java; exportación CSV y visualización de las series en NetLogo. | [README](04APE-Grupal/APE04_Java_NetLogo/README.md) |
+**Asignatura:** Simulación · **Carrera:** Ingeniería en Ciencias de la Computación · **Ciclo:** Quinto
 
-## Descargar y ejecutar
+Este repositorio reúne cuatro Actividades Prácticas Experimentales (APE) sobre modelado y simulación. Cada práctica aborda un problema diferente y organiza sus datos, código y documentación en su propia carpeta. El portafolio permite recorrer los ejercicios y consultar cómo se representan sus variables, se calculan sus resultados y se interpretan sus gráficas.
 
-```bash
-git clone https://github.com/AndersonC15/Simulacion.git
-cd Simulacion
-```
+Los trabajos incluyen un índice ponderado de lluvia, modelos de crecimiento poblacional, una línea de espera y la evolución de una población susceptible, infectada y recuperada. Se utilizan formulaciones determinísticas y estocásticas, junto con distintas formas de presentar los resultados. Las descripciones se basan en las implementaciones actuales; las aproximaciones y limitaciones se explican dentro de cada práctica.
 
-Para las prácticas Python, entra a la carpeta indicada, crea allí un entorno
-virtual e instala su propio `requirements.txt`. No se comparte un manifiesto
-entre prácticas: APE01 usa Matplotlib; APE02 utiliza NumPy y Matplotlib para
-los modelos poblacionales; APE03 necesita SimPy, NumPy y Matplotlib. Consulta las versiones de
-Python y los comandos exactos en cada README.
+## Prácticas
 
-APE04 requiere JDK 17 o posterior. Se conservan los scripts Bash y se incorpora
-Maven para generar un JAR ejecutable. NetLogo es una instalación externa y no
-una dependencia Maven ni pip. Las pruebas de NetLogo requieren esa instalación.
+| Práctica | Descripción | Documentación |
+|:--|:--|:--|
+| APE01 — Índice de lluvia | Evalúa humedad, nubosidad y temperatura, compara dos configuraciones de pesos y presenta tablas y gráficas. | [01APE](01APE/README.md) |
+| APE02 — Modelos poblacionales | Compara crecimiento exponencial, recurrencia discreta, ruido estocástico y aproximación de Euler, con exportación de series y gráficas. | [02APE](02APE/README.md) |
+| APE03 — Líneas de espera M/M/1 | Simula la atención con un servidor y contrasta métricas teóricas y simuladas mediante tablas, animación y gráficas. | [03APE-Grupal](03APE-Grupal/README.md) |
+| APE04 — Modelo epidemiológico SIR | Calcula la evolución en Java y representa los estados y las series exportadas mediante un visor NetLogo. | [04APE_Grupal](04APE_Grupal/README.md) |
 
-## Copias y resultados
+Cada README detalla el objetivo, los requisitos, las entradas, la ejecución y las salidas de su proyecto. Consulta también sus indicaciones sobre validación antes de interpretar resultados.
 
-[Practica4](Practica4/README.md) conserva otra implementación SIR Java que ya
-estaba en el repositorio; no se reorganiza ni sustituye por APE04. Los ZIP y
-otras copias se conservan. La práctica Java documentada del portafolio está en
-`04APE-Grupal/APE04_Java_NetLogo`, no en una carpeta extraída con otro nombre.
+## Declaración de uso de IA
 
-Cada práctica indica dónde escribe sus salidas. Ejecutar de nuevo puede
-reemplazar imágenes o CSV del ejemplo. Para validar proyectos anteriores se
-utilizaron copias temporales y se conservaron los resultados versionados.
-
-## Documentación y apoyo de IA
-
-Los README describen las capacidades y limitaciones observadas en el código.
-Los documentos de validación distinguen las pruebas ejecutadas de las
-comprobaciones pendientes; [VALIDACION_PORTAFOLIO.md](VALIDACION_PORTAFOLIO.md)
-registra las de esta actualización. En esta actualización se utilizó Codex para
-inspeccionar el portafolio, corregir rutas y documentación, completar
-manifiestos y comprobar Maven y ejecuciones en copias temporales. Esta
-aclaración se limita al trabajo de esta sesión; no atribuye autoría histórica
-ni un porcentaje de IA al resto del repositorio.
+Se utilizó Codex para inspeccionar el repositorio y revisar la organización, las referencias y la redacción de esta documentación. Las prácticas conservan sus declaraciones pertinentes sobre asistencia previa. Esta revisión documental no establece qué proporción del código se creó con IA ni atribuye autoría o autorización docente.
