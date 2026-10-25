@@ -55,12 +55,17 @@ class VistaConsola:
         self.controlador.cambiar_datos(datos, automatico=modo == "a")
         self.mostrar_configuracion()
 
+    def graficar(self):
+        from Vista.graficas import VistaGraficas
+        rutas = VistaGraficas().guardar(self.controlador.experimento_actual(), mostrar=True)
+        self.salida("Archivos guardados: " + ", ".join(map(str, rutas)))
+
     def ejecutar(self):
         modelos = {"1": "deterministico", "2": "discreto", "3": "estocastico", "4": "continuo"}
         try:
             while True:
                 self.salida("\n1 Exponencial | 2 Discreto | 3 Estocástico | 4 Euler | 5 Comparar\n"
-                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 0 Salir")
+                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 10 Gráficas | 0 Salir")
                 try:
                     opcion = self.entrada("Opción: ").strip()
                     if opcion == "0":
@@ -77,10 +82,14 @@ class VistaConsola:
                         self.mostrar_configuracion()
                     elif opcion == "9":
                         self.nuevo_arreglo()
+                    elif opcion == "10":
+                        self.graficar()
                     else:
                         self.salida("Opción inexistente; vuelva a intentarlo.")
                 except ErrorValidacion as error:
                     self.salida(f"Error: {error}")
+                except (OSError, ImportError, RuntimeError) as error:
+                    self.salida(f"No pudo completarse la salida: {error}")
         except (EOFError, KeyboardInterrupt):
             self.salida("\nEntrada finalizada. Hasta luego.")
 
@@ -89,14 +98,29 @@ def main():
     parser = argparse.ArgumentParser(description="APE02: comparación de modelos poblacionales")
     parser.add_argument("--comparar", action="store_true", help="ejecutar los cuatro modelos y salir")
     parser.add_argument("--escenario", choices=("crecimiento", "decrecimiento", "constante"))
+    parser.add_argument("--graficas", action="store_true", help="guardar PNG y CSV del experimento")
+    parser.add_argument("--escenarios", action="store_true", help="guardar crecimiento, decrecimiento y constancia comparables")
+    parser.add_argument("--salida", help="directorio de resultados; por defecto 02APE/resultados")
+    parser.add_argument("--mostrar", action="store_true", help="abrir figuras si hay backend interactivo")
     argumentos = parser.parse_args()
     controlador = ControladorSimulacion()
     if argumentos.escenario:
         controlador.escenario(argumentos.escenario)
     vista = VistaConsola(controlador)
-    if argumentos.comparar:
+    if argumentos.escenarios:
+        from Vista.graficas import VistaGraficas
+        for nombre in ("crecimiento", "decrecimiento", "constante"):
+            controlador.escenario(nombre)
+            rutas = VistaGraficas().guardar(controlador.ejecutar(), argumentos.salida,
+                                            mostrar=argumentos.mostrar, nombre=nombre)
+            print("Archivos guardados:", *rutas)
+    elif argumentos.comparar or argumentos.graficas:
         vista.mostrar_configuracion()
-        vista.presentar(controlador.ejecutar())
+        experimento = controlador.ejecutar()
+        vista.presentar(experimento)
+        if argumentos.graficas:
+            from Vista.graficas import VistaGraficas
+            print("Archivos guardados:", *VistaGraficas().guardar(experimento, argumentos.salida, mostrar=argumentos.mostrar))
     else:
         vista.ejecutar()
 
