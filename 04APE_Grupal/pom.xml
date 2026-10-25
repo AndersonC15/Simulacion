@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ec.edu.simulacion</groupId>
+  <artifactId>ape04-sir</artifactId>
+  <version>1.0.0</version>
+  <name>APE 04 - SIR con Java y NetLogo</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+    <junit.version>5.12.2</junit.version>
+    <netlogo.home>${env.NETLOGO_HOME}</netlogo.home>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <finalName>sir</finalName>
+    <!-- netlogo/ es la única fuente del modelo; no se mantiene otra copia. -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.4.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <failIfNoTests>true</failIfNoTests>
+          <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8</argLine>
+          <systemPropertyVariables>
+            <sir.proyecto>${project.basedir}</sir.proyecto>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive><manifest><mainClass>sir.Main</mainClass></manifest></archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.5.3</version>
+        <executions>
+          <execution>
+            <goals><goal>integration-test</goal><goal>verify</goal></goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes><include>**/EmpaquetadoIT.java</include></includes>
+          <failIfNoTests>true</failIfNoTests>
+          <argLine>-Djava.awt.headless=true -Dfile.encoding=UTF-8</argLine>
+          <systemPropertyVariables>
+            <sir.proyecto>${project.basedir}</sir.proyecto>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>netlogo</id>
+      <build><plugins><plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <includes combine.children="append"><include>**/NetLogoIT.java</include></includes>
+          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/*</additionalClasspathElement></additionalClasspathElements>
+          <systemPropertyVariables>
+            <netlogo.home>${netlogo.home}</netlogo.home>
+            <netlogo.extensions.dir>${netlogo.home}/extensions</netlogo.extensions.dir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin></plugins></build>
+    </profile>
+    <profile>
+      <id>gui</id>
+      <build><plugins><plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <includes combine.children="append"><include>**/*GuiIT.java</include></includes>
+          <argLine>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.desktop/sun.java2d=ALL-UNNAMED -Djava.awt.headless=false -Dfile.encoding=UTF-8</argLine>
+          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/*</additionalClasspathElement></additionalClasspathElements>
+          <systemPropertyVariables>
+            <netlogo.home>${netlogo.home}</netlogo.home>
+            <netlogo.extensions.dir>${netlogo.home}/extensions</netlogo.extensions.dir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin></plugins></build>
+    </profile>
+  </profiles>
+</project>
