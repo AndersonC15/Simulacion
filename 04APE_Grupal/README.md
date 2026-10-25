@@ -1,171 +1,211 @@
 # APE 04 — SIR con Java y NetLogo
 
-Java calcula la evolucion de la poblacion y guarda los resultados. NetLogo importa esos resultados y los representa. La animacion reproduce filas del CSV: no vuelve a simular ni agrega numeros aleatorios en NetLogo.
+Java calcula toda la simulación SIR y exporta sus resultados. NetLogo importa esos datos y reproduce las curvas y los estados reales de las personas. La comparación A/B corresponde a dos ejecuciones Java y es una función adicional del proyecto.
 
 ## Ejecutar
 
-Se necesita Java 21 y NetLogo 7.0.4 instalado. Para recompilar o ejecutar las pruebas se necesita el JDK, que incluye `javac` y `jar`. No se utiliza Python, Maven, Gradle ni librerias Java descargadas por el proyecto. La extension `csv` viene con NetLogo. La ventana utiliza bibliotecas de esa instalacion.
+Requisitos: JDK 21, una terminal y, para el visor, NetLogo 7.0.4 instalado y una sesión gráfica. La construcción necesita acceso a Maven Central la primera vez. Maven Wrapper descarga Maven 3.9.12; si ya tienes Maven, también puedes utilizarlo directamente.
 
-Desde esta carpeta:
-
-```bash
-java -jar sir.jar
-```
-
-Se genera una ejecucion nueva y se abre una ventana con graficas reales de NetLogo. Las curvas avanzan automaticamente, inicialmente con una pausa de 100 ms entre filas. La ventana integrada muestra el visualizador, sin las pestanas Informacion y Codigo del editor.
-
-Si no se detecta NetLogo, indica la carpeta que contiene `lib` y `extensions`:
+Desde `04APE_Grupal`:
 
 ```bash
-java -jar sir.jar --netlogo "/opt/NetLogo-7.0.4"
+./mvnw clean verify
+java -jar target/sir.jar
+java -jar target/sir.jar --sin-netlogo
+java -jar target/sir.jar --netlogo "/ruta/real/de/NetLogo-7.0.4"
 ```
 
-Esa ruta es un ejemplo; reemplazala por tu instalacion. Tambien se puede definir `NETLOGO_HOME`. Si NetLogo no se encuentra, los resultados Java ya generados se conservan y aparece un mensaje con la opcion necesaria.
+La ruta de NetLogo es un ejemplo: reemplázala por la carpeta real que contiene `lib` y `extensions`. También se admite `NETLOGO_HOME`, la detección por el ejecutable `netlogo` en `PATH` y las carpetas habituales, incluida `~/Aplicaciones`.
 
-Para generar resultados sin abrir ventanas:
+Con Maven instalado:
 
 ```bash
-java -jar sir.jar --sin-netlogo
+mvn clean verify
+mvn test
 ```
 
-Los botones y las graficas se comprobaron en Linux con Java 21.0.13 y NetLogo 7.0.4. No se ejecutaron en tu version exacta de OpenJDK 21.0.12.1 ni en Windows/macOS. El codigo usa funciones estandar disponibles en Java 21; no se necesita actualizar tu Java solo por este proyecto.
+El único artefacto canónico es **`target/sir.jar`**, con `sir.Main` como clase principal. El antiguo `sir.jar` de la raíz, si está presente en una copia anterior, se conserva localmente e ignora en Git: los scripts y el visor utilizan las clases o el JAR que se están ejecutando, y no lo actualizan ni lo cargan. Recompila con Maven cuando modifiques el código.
+
+La raíz se busca desde la ubicación real de las clases o del JAR. Se puede ejecutar el JAR por ruta absoluta desde otra carpeta, también con espacios:
+
+```bash
+cd /tmp
+java -jar "/ruta/con espacios/04APE_Grupal/target/sir.jar" --sin-netlogo
+```
+
+Conserva `target/sir.jar` dentro del proyecto, junto a `pom.xml` y la carpeta fuente `netlogo/`. El JAR no contiene una distribución de NetLogo ni es un paquete portátil independiente del proyecto.
 
 ## Modelo y escenarios
 
-El escenario base conserva los parametros de la guia:
-
-| Parametro | Valor |
+| Parámetro | Valor base |
 |---|---:|
-| Poblacion N | 100 |
+| Población N | 100 |
 | Susceptibles iniciales S0 | 95 |
 | Infectados iniciales I0 | 5 |
-| Recuperados iniciales R0 | 0 |
-| Probabilidad de contagio por contacto y paso, beta | 0.30 |
-| Probabilidad de recuperacion por paso, gamma | 0.10 |
+| Recuperados iniciales | 0 |
+| Beta por contacto y paso | 0.30 |
+| Gamma por paso | 0.10 |
 | Pasos | 100 |
 | Contactos por infectado y paso | 1 |
 | Semilla de ejemplo | 42 |
 
-`R0` tambien suele nombrar el numero reproductivo basico. No hay que confundirlo con el conteo inicial de recuperados: el numero reproductivo nominal es beta/gamma = 3 para un contacto. Se muestra sin redondearlo a un entero. Si gamma=0 no se realiza una division que afecte la simulacion: se indica sin limite, o no definido si el numerador tambien es cero.
+Cada paso toma una copia de los estados. Cada infectado de esa copia selecciona contactos de toda la población, con reemplazo y pudiendo elegirse a sí mismo. Si el contacto era susceptible se intenta contagiar con beta; después se intenta recuperar al infectado original con gamma. Los recién infectados actúan y pueden recuperarse desde el paso siguiente. La exportación consulta copias defensivas y no consume números aleatorios.
 
-En cada paso se toma una copia de los estados. Cada infectado de esa copia elige un contacto al azar de toda la poblacion, con reemplazo; puede elegirse a si mismo. Si el contacto era susceptible, se intenta contagiar con probabilidad beta. Despues se intenta recuperar al infectado original con probabilidad gamma. Un recien contagiado actua desde el siguiente paso. Se registra t=0 y luego cada paso: 101 filas para 100 pasos.
+Se conserva `S + I + R = N`. Es una simulación discreta por individuos, no un solucionador de ecuaciones diferenciales. Las regresiones verificadas son: semilla 42, final `S=4, I=0, R=96`, con pico `I=49` en `t=20`; semilla 7, final `S=9, I=0, R=91`.
 
-Es una simulacion discreta por individuos, como permite la guia; no es un solucionador de las ecuaciones diferenciales. El algoritmo base y el resultado de la semilla 42 se conservaron. Siempre se verifica `S + I + R = N`.
-
-Ejemplos incluidos en `netlogo/datos/`:
-
-| Archivo | Cambio respecto a base | Proposito |
-|---|---|---|
-| `resultados_java.csv` | Ninguno | Escenario de la guia, semilla 42 |
-| `otra_semilla.csv` | Semilla 7 | Mostrar variabilidad aleatoria con iguales parametros |
-| `menor_contagio.csv` | beta=0.10; semilla 42 | Comparar el efecto de reducir contagios |
-| `mayor_recuperacion.csv` | gamma=0.30; semilla 42 | Comparar el efecto de aumentar recuperaciones |
-
-Cada ejemplo tiene su PNG y sus parametros reales en un archivo `.properties` del mismo nombre. Las diferencias de una sola trayectoria no prueban una regla estadistica general: para comparar tendencias hay que repetir con varias semillas.
-
-Para cambiar valores desde la terminal:
+Beta y gamma se conservan como `double` de Java: precisión binaria finita, aproximadamente 15–17 cifras decimales significativas. No se redondean para decidir contagios, recuperaciones ni condiciones. El cociente nominal `contactos * beta / gamma` se presenta por separado usando `BigDecimal` con `DECIMAL128`; esa presentación no interviene en la simulación. Si gamma es cero se indica infinito o indefinido según el numerador.
 
 ```bash
-java -jar sir.jar --beta 0.10 --gamma 0.10 --semilla 42
-java -jar sir.jar --beta 0.30 --gamma 0.30 --semilla 42
-java -jar sir.jar --poblacion 200 --infectados 10 --pasos 150
-java -jar sir.jar --beta 0.299999 --gamma 0.30 --sin-netlogo
-java -jar sir.jar --csv netlogo/datos/mi_escenario.csv --sin-netlogo
-java -jar sir.jar --ayuda
+java -jar target/sir.jar --beta 0.10 --semilla 42
+java -jar target/sir.jar --gamma 0.30 --semilla 42
+java -jar target/sir.jar --poblacion 200 --infectados 10 --pasos 150
+java -jar target/sir.jar --beta 0.299999 --gamma 0.30 --sin-netlogo
+java -jar target/sir.jar --csv "netlogo/datos/mi escenario.csv" --sin-netlogo
+java -jar target/sir.jar --ayuda
 ```
 
-Usa punto decimal. Aqui no existen lambda, mu o rho: pertenecen al modelo de colas de la practica anterior. Beta y gamma son probabilidades en esta implementacion, por eso 2.9999 y 3 se rechazan; 0.299999 y 0.30 se aceptan conservando su precision.
+Usa punto decimal. Los ejemplos existentes `resultados_java`, `otra_semilla`, `menor_contagio` y `mayor_recuperacion` se conservan con sus CSV, PNG y parámetros. Si no tienen archivo individual, se muestran sus curvas y se indica que el detalle no está disponible. No se reconstruyen identidades a partir de conteos. Una sola trayectoria no demuestra una tendencia estadística general.
 
 ## Archivos que produce
 
-Sin `--csv`, cada ejecucion utiliza un nombre nuevo `netlogo/datos/ejecucion_....csv`. Junto al CSV se guardan un PNG y un `.properties`, con el mismo nombre base. Un nombre ya existente se rechaza para conservar resultados anteriores. No es necesario indicar un PNG por separado.
+Sin `--csv`, cada ejecución genera un nombre nuevo en **`netlogo/datos/` del proyecto**, incluso al ejecutar desde otra carpeta. Un `--csv` relativo se resuelve desde el directorio actual de la terminal.
 
-El CSV tiene cuatro columnas:
+Para `ejemplo.csv` se escriben cuatro archivos:
 
-El ejemplo principal se llama `netlogo/datos/resultados_java.csv`, siguiendo el nombre de la guia. En la entrega anterior se llamaba `java_simulado.csv`.
+| Archivo | Contenido |
+|---|---|
+| `ejemplo.csv` | Conteos agregados de cada instante |
+| `ejemplo_individuos.csv` | Estado real de cada persona en cada instante |
+| `ejemplo.png` | Gráfica Java completa |
+| `ejemplo.properties` | Parámetros, semilla, tiempo de cálculo y huellas SHA-256 de los CSV |
 
-```text
+Ambos CSV usan UTF-8 y comienzan en `t=0`. Contrato agregado:
+
+```csv
 tiempo,susceptibles,infectados,recuperados
 0,95,5,0
 1,93,7,0
 ```
 
-El PNG contiene la evolucion completa de esa ejecucion. La ventana NetLogo permite verla progresivamente y guardar otra imagen de su estado visible. El archivo de parametros conserva N, I0, beta, gamma, pasos, contactos, semilla y el tiempo medido del modelo. No se deducen beta, gamma ni la semilla a partir de las curvas.
+Contrato individual (fragmento ilustrativo del formato):
+
+```csv
+tiempo,id,estado
+0,0,SUSCEPTIBLE
+0,1,INFECTADO
+```
+
+Los estados válidos son `SUSCEPTIBLE`, `INFECTADO` y `RECUPERADO`. Los identificadores son enteros estables de `0` a `N-1`, ordenados dentro de cada tiempo; los tiempos son consecutivos. Para 100 personas y 100 pasos hay **10100 registros individuales más el encabezado**. Los conteos de cada paso coinciden exactamente con el CSV agregado. El detalle se escribe progresivamente; no se conserva todo ese historial en memoria.
+
+El controlador reserva los nombres de las cuatro salidas mediante archivos `.lock`, prepara temporales en el mismo directorio y publica el agregado al final. Rechaza cualquier salida existente, incluido el compañero individual. Ante un fallo ordinario retira solamente archivos que creó esa operación. No hay una transacción atómica de cuatro archivos frente a cortes de energía o procesos externos que ignoren las reservas. No borres los `.lock` mientras haya una exportación activa.
+
+Las huellas permiten detectar modificaciones y mezclas de archivos en las nuevas ejecuciones. No certifican autoría. En parejas externas sin huellas se valida la coherencia completa de estados y conteos, pero dos historias compatibles con los mismos agregados no permiten demostrar su procedencia. Los resultados existentes no se borran ante un error.
 
 ## Usar la ventana
 
-| Control | Funcion |
+| Control | Función |
 |---|---|
-| GENERAR ESCENARIO | Valida los campos, ejecuta Java, guarda un nuevo CSV/PNG/parametros y comienza a representarlo |
-| ABRIR CSV | Importa otro CSV Java como escenario A; queda pausado en t=0 |
-| COMPARAR CON OTRO CSV | Carga otra ejecucion Java como escenario B, sin generar datos en NetLogo |
-| QUITAR COMPARACION | Retira B y conserva A |
-| PAUSAR / CONTINUAR | Detiene o reanuda la reproduccion; al continuar desde el final vuelve a empezar |
-| REINICIAR | Vuelve a t=0 y queda pausado |
-| UN PASO | Muestra una fila mas y queda pausado |
-| VER COMPLETO | Muestra todas las filas y queda pausado |
-| Pausa entre pasos | Ajusta la velocidad de reproduccion, de 20 a 500 ms |
-| GUARDAR VISTA PNG | Guarda una imagen nueva de la interfaz NetLogo en `resultados/` |
+| GENERAR ESCENARIO | Ejecuta Java, guarda los cuatro archivos y comienza la reproducción |
+| ABRIR CSV | Carga un CSV agregado como A y queda en t=0 |
+| COMPARAR CON OTRO CSV | Carga una segunda ejecución como B y vuelve a t=0 |
+| QUITAR COMPARACIÓN | Retira B conservando A |
+| PAUSAR / CONTINUAR | Detiene o reanuda personas y curvas; desde el final reinicia |
+| REINICIAR | Regresa a t=0 y queda pausado |
+| UN PASO | Avanza una fila y queda pausado |
+| VER COMPLETO | Muestra curvas y estados individuales finales reales |
+| Pausa entre pasos | Regula la reproducción entre 20 y 500 ms |
+| GUARDAR VISTA PNG | Guarda la interfaz NetLogo completa en `resultados/netlogo_....png` |
+| Cierre de ventana / Ctrl+Q | Detiene el reloj, cierra las lecturas y libera el motor |
 
-En la parte superior hay una grafica S/I/R para cada CSV cargado. Debajo hay tres comparaciones: susceptibles, infectados y recuperados. B queda vacio mientras no se cargue una comparacion; no representa una ejecucion con cero personas. Todas las cantidades son personas, no porcentajes.
+Se conservan cinco gráficas: S/I/R de A, S/I/R de B y las comparaciones de susceptibles, infectados y recuperados. Hay **una sola vista de personas**, dividida en zona A y zona B. Cada persona se identifica por ejecución e ID exportado; no se utiliza `who` como identidad del modelo.
 
-Si los horizontes son diferentes, cada escenario termina en su ultima fila y no se inventan puntos despues de ella. Los monitores conservan su ultimo valor. Si las poblaciones son diferentes, las curvas comparan conteos absolutos; para comparar el efecto de beta o gamma conviene mantener N, I0, pasos y semilla iguales.
+Las posiciones forman una cuadrícula fija: Java no exporta distancias ni contactos físicos. No se simulan contagios en NetLogo, no hay movimientos epidemiológicos ni líneas de transmisión. La asignación S/I/R conserva los colores de las curvas: verde `#00AB4D`, infectados `#0B1220` y recuperados `#829A90`. El fondo de esa vista usa el tono claro existente `#E0F7EF` para que los infectados oscuros sean visibles. El marco Swing conserva fondo oscuro, verde neón y texto claro.
 
-Tambien se puede abrir `netlogo/modelo_sir_netlogo.nlogox` directamente en NetLogo 7.0.4. En ese caso se utiliza el editor normal, que conserva sus pestanas propias, y los botones del modelo: ABRIR CSV, COMPARAR CSV, REINICIAR, ANIMAR/PAUSAR y VER COMPLETO. Para repetir desde el final se pulsa REINICIAR y despues ANIMAR. El formato `.nlogox` corresponde a NetLogo 7.
+Si B no está cargada se indica explícitamente. Si falta el detalle se conservan las curvas y no se crean personas ficticias. Para horizontes distintos, cada ejecución mantiene su último estado real; sus curvas no añaden puntos fuera de sus datos. Las poblaciones distintas se comparan como conteos absolutos.
 
-## Estructura y codigo
+El visor incluye desplazamiento para las gráficas y las personas; los controles se organizan para pantallas de 1366×768. La ventana integrada no muestra las pestañas Información y Código. También se puede abrir `netlogo/modelo_sir_netlogo.nlogox` en el editor normal de NetLogo 7.0.4, que conserva sus propias pestañas.
 
-| Ubicacion | Responsabilidad |
+## Estructura y código
+
+| Ubicación | Responsabilidad |
 |---|---|
-| `src/sir/model/` | Individuos, estados, parametros y reglas SIR |
-| `src/sir/controller/` | Ejecutar cada escenario y coordinar sus archivos de salida |
-| `src/sir/view/` | Grafica Java, ventana y adaptador al motor grafico NetLogo |
-| `src/sir/io/` | Validacion del CSV y estrategia de exportacion |
-| `src/sir/Main.java`, `Opciones.java`, `LanzadorNetLogo.java` | Entrada, opciones y localizacion de NetLogo |
-| `netlogo/datos.nls` | Lectura y validacion, sin modelo epidemiologico |
-| `netlogo/vista.nls` | Dibuja los puntos importados |
-| `netlogo/controlador.nls` | Carga de escenarios y estado de reproduccion |
-| `pruebas/` | Casos ejecutables, resultados y hallazgos de QA |
+| `pom.xml`, `mvnw`, `mvnw.cmd`, `.mvn/wrapper/` | Construcción y Wrapper oficial |
+| `src/main/java/sir/model/` | Individuos, estados, parámetros y reglas SIR |
+| `src/main/java/sir/controller/` | Coordinación del modelo y publicación de resultados |
+| `src/main/java/sir/io/` | Estrategia agregada, exportación individual, lectores y huellas |
+| `src/main/java/sir/view/` | PNG Java, Swing y adaptador por reflexión a NetLogo |
+| `src/main/java/sir/` | Entrada, opciones y detección de la instalación |
+| `netlogo/datos.nls`, `individuos.nls` | Validación y lectura de CSV |
+| `netlogo/vista.nls`, `personas.nls` | Curvas y representación de personas |
+| `netlogo/controlador.nls` | Carga y reproducción |
+| `src/test/java/sir/pruebas/` | JUnit por responsabilidad, integración y GUI |
+| `pruebas/` | Script, documentación de validación e informes históricos |
+| `target/` | JAR, clases e informes generados; excluido de Git |
 
-Se conserva MVC, POO y la interfaz `ExportadorResultados` inyectada al controlador. Esta interfaz permite cambiar la estrategia de exportacion sin cambiar las reglas del modelo. Las clases tienen responsabilidades pequenas; no se agregaron patrones solo para aumentar la cantidad de archivos. El adaptador usa la API de NetLogo para integrar sus graficas; reune temporalmente los `.nls` porque el componente integrado no utiliza los editores de archivos incluidos. La copia temporal se retira al terminar la carga.
+Se mantiene MVC, POO y `ExportadorResultados` inyectado al controlador. Swing, AWT, ImageIO, NIO, XML y SHA-256 son APIs del JDK. **No hay dependencias Maven de producción.** NetLogo se carga desde su instalación local mediante reflexión; no se declaran coordenadas inventadas ni se copia su distribución.
 
-## Limites y manejo de errores
+La única dependencia declarada es `org.junit.jupiter:junit-jupiter:5.12.2`, con alcance `test`. Plugins con versión explícita: Compiler 3.14.0, Surefire y Failsafe 3.5.3, JAR 3.4.2, Clean 3.4.1 y Resources 3.3.1. Los dos últimos pertenecen al ciclo normal de construcción. Failsafe comprueba el JAR después de empaquetarlo y ejecuta los perfiles externos.
+
+`netlogo/` es la única ubicación fuente del modelo. El adaptador lee la lista `__includes` del modelo y reúne esos mismos archivos en una copia temporal para `InterfaceComponent`, que no aporta el editor de includes. La copia se elimina tras la carga. Maven no mantiene otra versión manual del modelo.
+
+El Wrapper se generó mediante el [procedimiento oficial de Apache Maven](https://maven.apache.org/tools/wrapper/index.html):
+
+```bash
+mvn org.apache.maven.plugins:maven-wrapper-plugin:3.3.4:wrapper -Dmaven=3.9.12 -Dtype=only-script
+```
+
+El tipo oficial `only-script` incluye `mvnw`, `mvnw.cmd` y `maven-wrapper.properties`; no necesita `maven-wrapper.jar` ni un descargador Java inventado. La versión [Maven 3.9.12 está publicada por Apache](https://maven.apache.org/docs/3.9.12/release-notes.html).
+
+## Límites y manejo de errores
 
 - N entre 1 y 10000; I0 entre 0 y N.
-- Beta y gamma finitas, entre 0 y 1.
-- De 0 a 2000 pasos y de 0 a 20 contactos por infectado.
-- `N * max(1,pasos) * (contactos+1) <= 10000000`, para mantener razonable el trabajo de esta demostracion.
-- CSV de hasta 2001 registros, lineas de hasta 256 caracteres y poblacion constante. El lector Java limita el archivo a 1 MiB.
+- Beta y gamma finitas entre 0 y 1; pasos entre 0 y 2000; contactos entre 0 y 20.
+- `N * max(1,pasos) * (contactos+1) <= 10000000`, calculado con `long`.
+- Agregado: hasta 1 MiB y 2001 registros; líneas de hasta 256 caracteres.
+- Individual: hasta 512 MiB, 20010000 registros como límite estructural y líneas de hasta 256 caracteres. Las ejecuciones nuevas también cumplen el límite de trabajo del modelo.
 
-Los limites son decisiones tecnicas de esta version, no requisitos nuevos atribuidos al docente. Los archivos invalidos se rechazan antes de reemplazar los datos visibles. Se rechazan tiempos con saltos, conteos negativos, poblacion variable, S creciente, R decreciente, mas recuperaciones que infectados previos y contagios cuando ya no hay infectados. Estos controles detectan incompatibilidades con SIR, pero no certifican el origen o la veracidad de cualquier archivo externo.
+Son límites técnicos del proyecto. Se rechazan encabezados incorrectos, UTF-8 inválido, archivos vacíos o truncados, IDs duplicados o ausentes, tiempos con saltos, estados desconocidos, transiciones imposibles y diferencias de conteos. Selecciona el CSV agregado en el selector; elegir el individual produce un mensaje y conserva la ejecución anterior. La memoria del detalle es proporcional a N, no al historial completo.
 
-Un archivo `.lock` reserva el nombre durante una exportacion; no debe borrarse mientras otra ejecucion lo usa. Si se mata el proceso desde el sistema, puede quedar esa reserva o una salida incompleta: usa otro nombre y revisa la ejecucion interrumpida. El programa no puede impedir cortes de energia, cierre forzado, errores del sistema operativo ni fallos fisicos del disco.
+Los archivos deben mantenerse estables durante la reproducción. No se implementa vigilancia continua de cambios externos en el disco. Un cierre forzado puede dejar reservas o salidas incompletas; revisa esa ejecución y usa otro nombre. Con poblaciones grandes las figuras se reducen y la lectura/representación puede tardar: el límite de datos no garantiza legibilidad individual para 10000 personas.
+
+La API local de NetLogo exige crear los widgets y compilar `InterfaceComponent` en el hilo gráfico. Esa inicialización puede producir una espera al abrir la ventana. La preparación de archivos, la simulación Java, las validaciones y las órdenes de reproducción se realizan en el trabajador; el temporizador no acumula avances mientras está ocupado.
 
 ## Recompilar y probar
 
-No es necesario recompilar para usar `sir.jar`. Si modificas el codigo:
-
 ```bash
-mkdir -p build
-javac --release 17 -encoding UTF-8 -d build $(find src -name '*.java')
-jar --create --file sir.jar --main-class sir.Main -C build .
+./mvnw clean verify
+mvn clean verify
+mvn test
 ```
 
-El bytecode se compila con nivel 17 y se ejecuta con Java 21 para NetLogo 7.0.4.
+`test` ejecuta las pruebas del modelo, opciones, validaciones y exportación. Surefire falla si no descubre pruebas. `verify` añade los casos del JAR, ejecutando la terminal en otras JVM para aislar los códigos de salida. Informes nuevos: `target/surefire-reports/` y `target/failsafe-reports/`. Los informes anteriores de `pruebas/RESULTADOS_*.md` se conservan como históricos y no prueban esta versión.
+
+Integración real con NetLogo, sin pantalla:
 
 ```bash
-bash pruebas/verificar.sh "/opt/NetLogo-7.0.4"
-bash pruebas/verificar.sh "/opt/NetLogo-7.0.4" --interfaz
+./mvnw -Pnetlogo -Dnetlogo.home="/ruta/real/de/NetLogo-7.0.4" verify
 ```
 
-La segunda opcion abre una ventana y acciona sus controles de forma automatica; requiere una sesion grafica. Las pruebas generan resultados de demostracion con nombres nuevos y actualizan sus informes. El unico script incluido compila y prueba; no se necesita para la ejecucion normal.
+Pruebas de la ventana Swing integrada, en una sesión gráfica:
 
-Para cerrar el visor se puede usar el cierre normal de la ventana o `Ctrl+Q`. Se detiene el reloj y se libera el motor NetLogo; los archivos de cada ejecucion ya estan guardados.
+```bash
+./mvnw -Pgui -Dnetlogo.home="/ruta/real/de/NetLogo-7.0.4" verify
+```
+
+Ejecuta los perfiles `netlogo` y `gui` por separado: sus JVM tienen configuraciones gráficas distintas. Si no se solicita un perfil, sus pruebas externas no se ejecutan. Si falta su instalación o pantalla, las pruebas correspondientes se informan como omitidas, sin contarlas como aprobadas. Si usas una pantalla virtual, debes tener Xvfb instalado; no es dependencia de producción.
+
+El script compatible utiliza Maven Wrapper y admite:
+
+```bash
+bash pruebas/verificar.sh
+bash pruebas/verificar.sh "/ruta/real/de/NetLogo-7.0.4"
+bash pruebas/verificar.sh "/ruta/real/de/NetLogo-7.0.4" --interfaz
+```
+
+Los resultados comprobados y el entorno de esta revisión se registran en `pruebas/VALIDACION_MAVEN.md`. No se reutilizan informes históricos para declarar que pasan las pruebas nuevas.
 
 ## Alcance de la entrega y uso de IA
 
-Esta entrega incluye el proyecto ejecutable y sus pruebas. El documento academico, las respuestas de control, el video y la exposicion quedan pendientes por indicacion del grupo. En el documento se deberan seguir las siete etapas de simulacion y el formato indicado en clase, sin indice ni caratula; en anexos iran el prompt, el enlace del video, Git y la declaracion de IA. El video debera durar al menos cinco minutos segun los apuntes proporcionados.
+Esta entrega comprende el código, la construcción, la visualización y las pruebas. El informe académico, el video y la exposición quedan fuera del trabajo actual. La guía disponible describe la práctica SIR y la importación de CSV; no se atribuye a ella la exigencia de dos escenarios Java ni siete gráficas. Comparar A/B no equivale a comparar implementaciones independientes en varios lenguajes.
 
-La guia describe SIR, aunque la fila de implementacion de la rubrica menciona M/M/1. Tambien incluye Python y un modelo autonomo en NetLogo en otras secciones. Esta version sigue la asignacion comunicada por el grupo: Java genera los datos y NetLogo los importa. Comparar dos CSV Java no equivale a comparar dos implementaciones independientes en lenguajes distintos.
-
-Se utilizo ChatGPT para apoyar la revision, generar y modificar codigo, disenar pruebas y redactar instrucciones. La ayuda fue sustancial; no se declara un porcentaje menor sin evidencia ni se presenta este codigo como elaborado completamente sin asistencia. El grupo debe estudiar, adaptar y validar lo que entrega, y declarar su uso segun las reglas del docente. Los prompts completos corresponden a los anexos del documento, no a este README.
+Se utilizó ChatGPT/Codex para inspeccionar y modificar código, integrar Maven, diseñar y ejecutar pruebas y actualizar las instrucciones. La asistencia fue sustancial; no se inventa un porcentaje ni se presenta el código como elaborado sin ayuda. El grupo debe estudiar, adaptar, verificar y declarar la asistencia conforme a las reglas del docente.
