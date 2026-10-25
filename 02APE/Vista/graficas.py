@@ -5,6 +5,8 @@ from pathlib import Path
 import sys
 import tempfile
 
+from Modelo.numeros import ErrorValidacion
+
 
 class VistaGraficas:
     def guardar(self, experimento, directorio=None, *, mostrar=False, nombre="comparacion"):
@@ -25,6 +27,8 @@ class VistaGraficas:
             for serie in experimento.series:
                 tiempos = [float(t) for t in serie.tiempos]
                 poblaciones = [float(p) for p in serie.poblaciones]
+                if any(b <= a for a, b in zip(tiempos, tiempos[1:])):
+                    raise ErrorValidacion("La precisión gráfica fusionaría tiempos distintos; aumente el último paso.")
                 if serie.nombre == "Discreto":
                     eje.step(tiempos, poblaciones, where="post", marker="s", label=serie.nombre)
                 elif serie.nombre == "Estocástico":

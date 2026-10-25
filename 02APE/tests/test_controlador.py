@@ -29,3 +29,15 @@ def test_arreglo_invalido_no_cambia_configuracion():
     assert controlador.parametros is anterior
     controlador.cambiar_datos(("0", "10"), automatico=False)
     assert controlador.parametros.p0 == 0
+
+
+def test_experimento_copia_listas_de_entrada():
+    from Modelo.resultados import Experimento
+    original = ControladorSimulacion().ejecutar()
+    series = list(original.series)
+    datos = list(original.observaciones)
+    copia = Experimento(original.parametros, series, datos)
+    series.clear()
+    datos.clear()
+    assert copia.series == original.series
+    assert copia.observaciones == original.observaciones

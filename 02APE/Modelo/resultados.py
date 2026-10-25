@@ -32,3 +32,8 @@ class Experimento:
     series: tuple[Serie, ...]
     observaciones: tuple[Decimal, ...]
     escenario: str = "personalizado"
+
+    def __post_init__(self):
+        # Copias defensivas de las colecciones recibidas por la API pública.
+        object.__setattr__(self, "series", tuple(self.series))
+        object.__setattr__(self, "observaciones", tuple(self.observaciones))

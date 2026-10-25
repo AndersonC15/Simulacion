@@ -1,4 +1,6 @@
 import csv
+from dataclasses import replace
+from decimal import Decimal
 from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
@@ -6,6 +8,8 @@ import matplotlib.pyplot as plt
 import pytest
 from Controlador.simulacion import ControladorSimulacion
 from Vista.graficas import VistaGraficas
+from Modelo.resultados import Serie
+from Modelo.numeros import ErrorValidacion
 
 
 def test_png_y_csv_reproducibles_en_ruta_con_espacios(tmp_path):
@@ -38,3 +42,12 @@ def test_salida_directorio_es_archivo(tmp_path):
     with pytest.raises(OSError):
         VistaGraficas().guardar(ControladorSimulacion().ejecutar(), destino)
     assert destino.read_text() == "conservar"
+
+
+def test_no_fusiona_tiempos_casi_iguales(tmp_path):
+    experimento = ControladorSimulacion().ejecutar()
+    serie = Serie("Prueba", tuple(map(Decimal, ("0", "1", "1.000000000000000000001"))),
+                  tuple(map(Decimal, ("1", "2", "3"))))
+    with pytest.raises(ErrorValidacion, match="fusionaría"):
+        VistaGraficas().guardar(replace(experimento, series=(serie,)), tmp_path)
+    assert plt.get_fignums() == []

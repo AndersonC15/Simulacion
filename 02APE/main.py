@@ -78,12 +78,22 @@ class VistaConsola:
         self.salida(f"Datos de retorno verificados: {informe.datos_verificados}; puntos: {informe.puntos_por_serie}; agentes: {informe.agentes}")
         self.salida(f"Gráfica exportada por NetLogo: {informe.archivo_plot}")
 
+    def analizar_ruido(self):
+        from Modelo.analisis import analizar_ruido
+        resumenes = analizar_ruido(self.controlador.parametros)
+        self.salida("30 semillas compartidas por nivel: sigma | media final aproximada | desviación poblacional final aproximada")
+        for resumen in resumenes:
+            self.salida(f"{resumen.sigma} | {resumen.media} | {resumen.desviacion}")
+        self.salida("Se compara dispersión entre realizaciones; una curva no demuestra tendencia poblacional. El recorte a cero puede sesgar la media.")
+        return resumenes
+
     def ejecutar(self):
         modelos = {"1": "deterministico", "2": "discreto", "3": "estocastico", "4": "continuo"}
         try:
             while True:
                 self.salida("\n1 Exponencial | 2 Discreto | 3 Estocástico | 4 Euler | 5 Comparar\n"
-                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 10 Gráficas | 11 NetLogo | 0 Salir")
+                            "6 Datos/parámetros | 7 Modificar | 8 Escenario | 9 Nuevo arreglo | 10 Gráficas | 11 NetLogo\n"
+                            "a Analizar ruido (30 semillas) | 0 Salir")
                 try:
                     opcion = self.entrada("Opción: ").strip()
                     if opcion == "0":
@@ -104,6 +114,8 @@ class VistaConsola:
                         self.graficar()
                     elif opcion == "11":
                         self.enviar_netlogo()
+                    elif opcion.lower() == "a":
+                        self.analizar_ruido()
                     else:
                         self.salida("Opción inexistente; vuelva a intentarlo.")
                 except ErrorValidacion as error:
@@ -125,12 +137,15 @@ def main():
     parser.add_argument("--netlogo", action="store_true", help="verificar el experimento en NetLogo real sin ventana")
     parser.add_argument("--netlogo-gui", action="store_true", help="intentar ventana NetLogo durante 5 segundos, con límite de tiempo")
     parser.add_argument("--netlogo-home", help="carpeta de instalación; también admite NETLOGO_HOME")
+    parser.add_argument("--analizar-ruido", action="store_true", help="comparar sigma con 30 semillas por nivel y salir")
     argumentos = parser.parse_args()
     controlador = ControladorSimulacion()
     if argumentos.escenario:
         controlador.escenario(argumentos.escenario)
     vista = VistaConsola(controlador)
-    if argumentos.escenarios:
+    if argumentos.analizar_ruido:
+        vista.analizar_ruido()
+    elif argumentos.escenarios:
         from Vista.graficas import VistaGraficas
         for nombre in ("crecimiento", "decrecimiento", "constante"):
             controlador.escenario(nombre)
@@ -150,5 +165,18 @@ def main():
         vista.ejecutar()
 
 
+def arranque():
+    import sys
+    try:
+        main()
+        return 0
+    except (ErrorValidacion, OSError, ImportError, RuntimeError) as error:
+        print(f"Error: {error}", file=sys.stderr)
+        return 1
+    except (EOFError, KeyboardInterrupt):
+        print("\nEntrada finalizada. Hasta luego.")
+        return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(arranque())

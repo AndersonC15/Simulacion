@@ -25,5 +25,5 @@ class Parametros:
             raise ErrorValidacion("Horizonte admitido: de 0 a 10000 períodos.")
         if isinstance(self.semilla, bool) or not isinstance(self.semilla, int) or not 0 <= self.semilla < 2**64:
             raise ErrorValidacion("La semilla debe ser un entero entre 0 y 2^64-1.")
-        if isinstance(self.precision, bool) or not isinstance(self.precision, int) or not 32 <= self.precision <= 200:
-            raise ErrorValidacion("La precisión de aproximación debe ser un entero entre 32 y 200.")
+        if isinstance(self.precision, bool) or not isinstance(self.precision, int) or not 32 <= self.precision <= 80:
+            raise ErrorValidacion("La precisión de aproximación debe ser un entero entre 32 y 80.")

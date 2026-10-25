@@ -3,9 +3,12 @@ from decimal import Decimal
 from fractions import Fraction
 
 from Modelo.numeros import MAX_PUNTOS, ErrorValidacion, multiplicar
+from Modelo.parametros import Parametros
 
 
 def malla(parametros, periodica=False):
+    if not isinstance(parametros, Parametros):
+        raise ErrorValidacion("Simular requiere un objeto Parametros validado.")
     horizonte = parametros.horizonte
     paso = Decimal(1) if periodica else parametros.dt
     if periodica and horizonte != horizonte.to_integral_value():
