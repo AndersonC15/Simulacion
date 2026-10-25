@@ -2,7 +2,7 @@
 from decimal import Decimal, DecimalException, localcontext
 from typing import Protocol
 
-from Modelo.numeros import ErrorValidacion, comprobar_resultado, multiplicar
+from Modelo.numeros import ErrorValidacion, comprobar_resultado, multiplicar, sumar
 from Modelo.resultados import Serie
 from Modelo.tiempo import malla
 
@@ -28,3 +28,15 @@ class Deterministico:
                 raise ErrorValidacion("No se pudo aproximar la exponencial.") from error
             poblaciones.append(comprobar_resultado(multiplicar(parametros.p0, factor)))
         return Serie("Determinístico exponencial", tiempos, tuple(poblaciones))
+
+
+class Discreto:
+    def simular(self, parametros):
+        tiempos = malla(parametros, periodica=True)
+        if len(tiempos) > 1 and parametros.tasa < -1:
+            raise ErrorValidacion("Discreto requiere r >= -1 para no producir población negativa.")
+        poblaciones = [parametros.p0]
+        for _ in tiempos[1:]:
+            actual = poblaciones[-1]
+            poblaciones.append(sumar(actual, multiplicar(parametros.tasa, actual)))
+        return Serie("Discreto", tiempos, tuple(poblaciones))

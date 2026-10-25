@@ -1,6 +1,8 @@
 from decimal import Decimal, localcontext
 from Modelo.parametros import Parametros
-from Modelo.estrategias import Deterministico
+from Modelo.estrategias import Deterministico, Discreto
+from Modelo.numeros import ErrorValidacion
+import pytest
 
 
 def test_exponencial_referencia():
@@ -13,3 +15,12 @@ def test_exponencial_referencia():
 
 def test_exponencial_constante():
     assert set(Deterministico().simular(Parametros(tasa="0")).poblaciones) == {Decimal(1000)}
+
+
+def test_discreto_un_periodo():
+    assert Discreto().simular(Parametros(horizonte="1")).poblaciones == (Decimal(1000), Decimal(1100))
+
+
+def test_discreto_rechaza_negatividad():
+    with pytest.raises(ErrorValidacion):
+        Discreto().simular(Parametros(tasa="-1.1"))
