@@ -15,6 +15,8 @@ class ErrorValidacion(ValueError):
 def decimal_desde_entrada(valor):
     if isinstance(valor, bool) or not isinstance(valor, (str, int, Decimal)):
         raise ErrorValidacion("Use texto, entero o Decimal; float y booleanos no se admiten.")
+    if isinstance(valor, int) and valor.bit_length() > 850:
+        raise ErrorValidacion("Entero demasiado largo: máximo 80 dígitos de entrada.")
     texto = str(valor)
     if len(texto) > MAX_CARACTERES:
         raise ErrorValidacion("Entrada demasiado larga: máximo 256 caracteres.")

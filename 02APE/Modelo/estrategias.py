@@ -18,7 +18,7 @@ class Deterministico:
         poblaciones = []
         for tiempo in tiempos:
             exponente = multiplicar(parametros.tasa, tiempo)
-            if abs(exponente) > 500:
+            if exponente.copy_abs() > 500:
                 raise ErrorValidacion("El exponente r*t supera ±500; reduzca tasa u horizonte.")
             try:
                 with localcontext() as contexto:
