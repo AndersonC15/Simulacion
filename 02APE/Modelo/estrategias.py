@@ -2,7 +2,7 @@
 from decimal import Decimal, DecimalException, localcontext
 from typing import Protocol
 
-from Modelo.numeros import ErrorValidacion, comprobar_resultado, multiplicar, sumar
+from Modelo.numeros import ErrorValidacion, comprobar_resultado, decimal_desde_entrada, multiplicar, sumar
 from Modelo.resultados import Serie
 from Modelo.tiempo import malla
 
@@ -40,3 +40,28 @@ class Discreto:
             actual = poblaciones[-1]
             poblaciones.append(sumar(actual, multiplicar(parametros.tasa, actual)))
         return Serie("Discreto", tiempos, tuple(poblaciones))
+
+
+class Estocastico:
+    def __init__(self, ruido=None):
+        self._ruido = ruido
+
+    def simular(self, parametros):
+        import numpy as np
+
+        tiempos = malla(parametros, periodica=True)
+        generador = np.random.default_rng(parametros.semilla)
+        poblaciones = [parametros.p0]
+        for _ in tiempos[1:]:
+            if self._ruido is not None:
+                ruido = decimal_desde_entrada(self._ruido())
+            elif parametros.sigma == 0:
+                ruido = Decimal(0)
+            else:
+                # Frontera float64 explícita: no recupera dígitos del generador.
+                normal_estandar = Decimal(str(generador.normal(0, 1)))
+                ruido = multiplicar(parametros.sigma, normal_estandar)
+            actual = poblaciones[-1]
+            siguiente = sumar(sumar(actual, multiplicar(parametros.tasa, actual)), ruido)
+            poblaciones.append(max(Decimal(0), siguiente))
+        return Serie("Estocástico", tiempos, tuple(poblaciones))
