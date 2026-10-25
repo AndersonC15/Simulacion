@@ -13,6 +13,8 @@ public final class Main {
         try {
             Path raiz=raiz();
             Opciones opciones=Opciones.leer(args,raiz);
+            // El PNG se dibuja en memoria: este modo no necesita ni intenta abrir X11.
+            if (opciones.sinNetlogo()) { System.setProperty("java.awt.headless","true"); }
             var serie=new ControladorSIR(new ExportadorCsv()).ejecutar(opciones.parametros(),opciones.semilla(),opciones.csv());
             ResultadoPaso fin=serie.get(serie.size()-1);
             ResultadoPaso pico=serie.stream().max(java.util.Comparator.comparingInt(ResultadoPaso::getInfectados)).orElseThrow();

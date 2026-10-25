@@ -89,7 +89,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <includes combine.children="append"><include>**/NetLogoIT.java</include></includes>
-          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/*</additionalClasspathElement></additionalClasspathElements>
+          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/netlogo-7.0.4.jar</additionalClasspathElement></additionalClasspathElements>
           <systemPropertyVariables>
             <netlogo.home>${netlogo.home}</netlogo.home>
             <netlogo.extensions.dir>${netlogo.home}/extensions</netlogo.extensions.dir>
@@ -105,7 +105,7 @@
         <configuration>
           <includes combine.children="append"><include>**/*GuiIT.java</include></includes>
           <argLine>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.desktop/sun.java2d=ALL-UNNAMED -Djava.awt.headless=false -Dfile.encoding=UTF-8</argLine>
-          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/*</additionalClasspathElement></additionalClasspathElements>
+          <additionalClasspathElements><additionalClasspathElement>${netlogo.home}/lib/app/netlogo-7.0.4.jar</additionalClasspathElement></additionalClasspathElements>
           <systemPropertyVariables>
             <netlogo.home>${netlogo.home}</netlogo.home>
             <netlogo.extensions.dir>${netlogo.home}/extensions</netlogo.extensions.dir>
