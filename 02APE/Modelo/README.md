@@ -19,7 +19,7 @@ Cada estrategia recibe `Parametros` y devuelve `Serie`. El exponencial usa
 `exp(r*t)`; el discreto actualiza `P+rP`; el estocástico añade ruido y aplica
 `max(0,...)`; Euler usa `P+h*rP`. El estocástico crea un generador NumPy local
 con semilla; las pruebas pueden inyectar ruido controlado. Las reglas no
-importan gráficos ni NetLogo.
+importan vistas ni bibliotecas gráficas.
 
 Las operaciones finitas exactas tienen hasta 10000 dígitos y trampas de pérdida
 activa; exp, estimación, raíz y ruido tienen fronteras aproximadas documentadas.

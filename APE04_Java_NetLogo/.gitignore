@@ -1,0 +1,7 @@
+build/
+.build/
+*.lock
+.sir-*/
+.visor-*.nlogox
+netlogo/datos/ejecucion_*
+resultados/netlogo_*.png

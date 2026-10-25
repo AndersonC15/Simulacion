@@ -2,8 +2,14 @@
 
 Esta práctica compara cuatro formulaciones del crecimiento poblacional con
 los datos y pseudocódigos de la [guía local de la semana 2](ape_guia%20simulacion%20semana%202-firmado-signed.pdf).
-Python calcula las series; Matplotlib presenta comparaciones y NetLogo recibe
-el mismo experimento mediante pyNetLogo para visualizarlo.
+Python calcula las series, NumPy genera el ruido normal reproducible y
+Matplotlib presenta las comparaciones. La práctica utiliza únicamente estas
+bibliotecas de ejecución y módulos incluidos en Python.
+
+La guía incluye una integración con NetLogo, pero la corrección posterior del
+usuario exige tecnologías básicas y excluye NetLogo y SimPy. Esa instrucción
+prevalece en esta versión; el encargo original se conserva como historial en
+[PROMPT.md](PROMPT.md).
 
 Tiempo, aleatoriedad y forma de evolución son dimensiones distintas: la
 recurrencia discreta de esta práctica es determinística y el modelo
@@ -13,21 +19,20 @@ no representan categorías mutuamente excluyentes.
 
 ## Tecnologías y requisitos
 
-- Python ≥3.12 para las versiones fijadas de las dependencias; se comprobó
-  Python 3.14.4 en Linux. El mínimo se deriva de metadatos de paquetes, no de
-  una ejecución de esta práctica en Python 3.12.
+- Python ≥3.12 para las versiones fijadas de las dependencias. El mínimo se
+  deriva de sus metadatos; las ejecuciones comprobadas se identifican en
+  [VALIDACION.md](VALIDACION.md).
 - `decimal`, `fractions`, clases de datos y `typing.Protocol`, incluidos en
   Python: dominio, precisión, mallas y contrato Strategy.
-- NumPy: generador normal pseudoaleatorio local; Matplotlib: gráficas y PNG.
-- pyNetLogo, importado como `pynetlogo`: comunicación con NetLogo. JPype inicia
-  la JVM; pandas es una dependencia del puente. No se incorporan cálculos
-  artificiales para utilizar pandas o SciPy; SciPy no es necesaria aquí.
-- pytest: pruebas automatizadas; el manifiesto final incluye sus dependencias
-  y las transitivas obtenidas desde un entorno limpio.
-- NetLogo y Java: instalaciones externas, no paquetes instalables por pip.
-  El puente se comprobó con NetLogo 7.0.4, su Java incorporado 17.0.2 y
-  pyNetLogo 0.5.2, en Linux x86_64. Los detalles de la comprobación real
-  están en [VALIDACION.md](VALIDACION.md).
+- NumPy: generador normal pseudoaleatorio local.
+- Matplotlib: gráficas comparativas y archivos PNG. El módulo `csv` de Python
+  exporta las tablas de resultados.
+- pytest: herramienta opcional para ejecutar las pruebas, separada en
+  [requirements-dev.txt](requirements-dev.txt).
+
+[requirements.txt](requirements.txt) fija NumPy, Matplotlib y sus dependencias
+transitivas. El programa calcula directamente las cuatro ecuaciones; no
+necesita un motor externo de simulación.
 
 ## Instalar y ejecutar
 
@@ -43,10 +48,11 @@ python -m pip check
 python main.py
 ```
 
-Si ya existe el entorno, actívalo sin recrearlo. Para salir: `deactivate`.
-Las dependencias están fijadas en [requirements.txt](requirements.txt), que
-incluye las versiones resueltas del entorno de esta práctica. No instales
-este manifiesto sobre el entorno de otra APE.
+Si ya existe un entorno antiguo de esta práctica con otras dependencias,
+crea uno nuevo con otro nombre para instalar solo las actuales. Para salir:
+`deactivate`. Las versiones resueltas de ejecución están fijadas en
+[requirements.txt](requirements.txt). No instales este manifiesto sobre el
+entorno de otra APE.
 
 En Windows PowerShell se puede utilizar el intérprete sin activar el entorno:
 
@@ -75,7 +81,7 @@ python main.py --help
 
 `--mostrar` solicita ventanas cuando hay backend interactivo. Para generar
 archivos sin escritorio usa Agg. La aplicación elige Agg en Linux cuando no
-hay `DISPLAY` ni `WAYLAND_DISPLAY`. Los archivos se pueden generar sin NetLogo.
+hay `DISPLAY` ni `WAYLAND_DISPLAY`.
 
 ## Datos y parámetros iniciales
 
@@ -138,8 +144,7 @@ aditivo una población que llegó a cero puede volver a aumentar.
 Las clases están en [Modelo/estrategias.py](Modelo/estrategias.py). El
 controlador ejecuta las cuatro estrategias con los mismos parámetros, guarda
 sus series y entrega ese experimento a las vistas. Esto implementa el
-pseudocódigo de comparación sin recalcular ruido al presentar una gráfica o
-al enviarla a NetLogo.
+pseudocódigo de comparación sin recalcular ruido al presentar una gráfica.
 
 El mismo número r tiene interpretaciones distintas: en la exponencial es una
 tasa instantánea, mientras que en la recurrencia es un aumento relativo por
@@ -152,8 +157,9 @@ siguientes estados.
 ## Uso del menú y nuevos datos
 
 El menú permite ejecutar cada modelo, comparar, consultar datos y parámetros,
-modificarlos, elegir escenario, cambiar el arreglo, graficar y utilizar el
-puente NetLogo. La opción `a` ejecuta el análisis de ruido con varias semillas. La opción 6 muestra la configuración real; la opción 7 permite
+modificarlos, elegir escenario, cambiar el arreglo y graficar. Sus opciones
+numéricas van del 1 al 10; `a` ejecuta el análisis de ruido con varias semillas
+y `0` sale. La opción 6 muestra la configuración real; la opción 7 permite
 cambiar sus campos y conservar un valor con Enter. Los errores de entrada se
 informan y permiten continuar. EOF y Ctrl+C cierran el menú.
 
@@ -227,7 +233,7 @@ exploración no constituye una validación estadística exhaustiva. Consulta
   ecuaciones. No imprime, captura entradas, importa vistas ni abre ventanas.
 - `Controlador/` coordina estrategias y mantiene el experimento calculado.
 - `main.py` es la **vista de consola y el arranque**: menú, lectura y tablas.
-  `Vista/` adapta resultados a gráficas y NetLogo.
+  `Vista/` adapta resultados a gráficas y archivos CSV.
 - `Parametros`, `Serie` y `Experimento` son objetos de datos inmutables. Cada
   estrategia es una clase que implementa `simular(parametros)`.
 
@@ -259,8 +265,8 @@ NumPy utiliza precisión finita para la normal. Cada simulación crea
 `default_rng(semilla)` sin modificar el generador global; el valor generado
 se incorpora mediante su representación decimal y no recupera precisión
 binaria perdida. La aritmética posterior conserva ese valor aproximado.
-Las conversiones a float para Matplotlib y a double para NetLogo están en
-`Vista/`; esos valores nunca regresan al modelo para continuar cálculos.
+Las conversiones a float para Matplotlib están en `Vista/`; esos valores
+nunca regresan al modelo para continuar cálculos.
 
 Límites deliberados de recursos:
 
@@ -300,84 +306,12 @@ o `.3f`; los CSV guardan todos los puntos como texto Decimal. Un resultado
 exacto de una recurrencia puede contener muchos dígitos. El CSV es más cómodo
 para inspeccionarlos; no se reutiliza como entrada de cálculo.
 
-## NetLogo desde Python
-
-NetLogo se utiliza como visualizador de las series ya calculadas. Se envían
-los parámetros, tiempos, poblaciones y observaciones; no se genera otra
-trayectoria aleatoria ni un agente por habitante. La representación usa
-curvas y cero tortugas. Mantén juntos los archivos de [netlogo/](netlogo/README.md).
-
-Configura la ruta de instalación, sin confundirla con el lanzador:
-
-```bash
-export NETLOGO_HOME="/ruta/NetLogo 7.0.4"
-```
-
-El adaptador también permite una ruta explícita. Si hay varias instalaciones,
-selecciona una mediante esta variable. El worker busca primero la JVM incluida
-en NetLogo; `NETLOGO_JVM_PATH` permite indicar su biblioteca JVM cuando haga
-falta. No se fija una ruta privada como único método de configuración.
-
-Desde la consola se puede enviar la comparación y exportar el plot real:
-
-```bash
-python main.py --netlogo --salida resultados
-python main.py --netlogo-home "/otra/ruta/NetLogo 7.0.4" --netlogo
-```
-
-La opción 11 del menú envía el experimento conservado. Los archivos exportados
-por NetLogo tienen un identificador en el nombre para conservar ejecuciones
-anteriores. El CSV del plot NetLogo no sustituye el puente: se carga el
-modelo, se ejecutan comandos y se consultan los datos de vuelta.
-
-Ejemplo con la API real, desde `02APE` y con el entorno activado:
-
-```python
-from Controlador.simulacion import ControladorSimulacion
-from Vista.puente_netlogo import PuenteNetLogo
-
-controlador = ControladorSimulacion()
-experimento = controlador.ejecutar()
-informe = PuenteNetLogo().enviar(experimento)
-print(informe)
-```
-
-`PuenteNetLogo.enviar` recibe el experimento existente. El subproceso carga
-realmente el modelo, ejecuta comandos y consulta sus datos mediante reporters.
-El proceso principal compara las series y parámetros recuperados con los
-enviados. La igualdad se comprueba después de la conversión de transporte;
-no representa exactitud Decimal infinita dentro de NetLogo.
-
-Cada envío utiliza un proceso auxiliar con su propia JVM, para evitar
-intentar reiniciar JPype dentro del mismo proceso. En modo sin ventana se
-cierra el workspace y la JVM. La GUI de pyNetLogo 0.5.2 se bloqueó al cerrar
-`Frame.dispose()`; se corrigió finalizando su proceso aislado después de
-escribir la respuesta. El sistema libera la JVM y sus ventanas; esta decisión
-y su prueba real se describen en [netlogo/README.md](netlogo/README.md). Hay límite de
-90 segundos por defecto, configurable hasta 300, y memoria JVM máxima de
-768 MiB de heap. El transporte admite hasta 100000 puntos totales. Se detectan instalación ausente, rutas erróneas, modelo inválido,
-fallos de arranque/cierre y tiempo agotado. Python y las gráficas siguen
-funcionando aunque NetLogo no esté disponible.
-
-Para solicitar ventana usa `python main.py --netlogo-gui`, o `gui=True` en
-la API; requiere
-escritorio y permanece abierta un intervalo acotado, inicialmente cinco
-segundos. `salida_plot` exporta un gráfico NetLogo y `salida_interfaz` requiere
-GUI; se rechazan archivos de salida ya existentes. El informe devuelve las
-versiones reales y el resultado de comunicación. Consulta
-[VALIDACION.md](VALIDACION.md) para distinguir el puente real, los casos
-simulados y el alcance de las comprobaciones gráficas. En Linux se probó
-Matplotlib con TkAgg real y con Agg, y NetLogo tanto sin ventana como con
-interfaz real. Windows, macOS y otras versiones NetLogo quedan sin comprobar.
-
 ## Resultados, estructura y pruebas
 
 Las salidas por defecto están en [resultados/](resultados/README.md):
 `comparacion.png/.csv` y, con `--escenarios`, pares
-`crecimiento`, `decrecimiento` y `constante`. Los envíos CLI a NetLogo exportan
-`netlogo-<identificador>.csv` y, con GUI, su PNG de interfaz; el ejemplo
-validado de interfaz se encuentra en `resultados/netlogo_oficial.png`.
-PNG y CSV de Matplotlib se reemplazan mediante
+`crecimiento`, `decrecimiento` y `constante`.
+PNG y CSV se reemplazan mediante
 archivos temporales al repetir el mismo nombre. No existe una transacción
 conjunta entre ambos: un fallo posterior al PNG puede dejar ese PNG y el CSV
 anterior. Las figuras se cierran en `finally`.
@@ -386,19 +320,21 @@ anterior. Las figuras se cierran en `finally`.
 02APE/
 ├── Modelo/          # Dominio, estimación, precisión, tiempo y estrategias
 ├── Controlador/     # Coordinación y conservación del experimento
-├── Vista/           # Gráficas y puente/proceso auxiliar NetLogo
-├── netlogo/         # Modelo visualizador y documentación
-├── tests/           # Matemática, entradas, consola, gráficas y puente
+├── Vista/           # Gráficas Matplotlib y exportación CSV
+├── tests/           # Matemática, entradas, consola y gráficas
 ├── resultados/      # PNG y CSV regenerables
 ├── main.py          # Vista de consola y arranque
-├── requirements.txt
+├── requirements.txt  # Dependencias de ejecución
+├── requirements-dev.txt # pytest opcional y dependencias de ejecución
 ├── PROMPT.md         # Encargo y uso real de IA
 └── VALIDACION.md     # Cinco revisiones y evidencia de comandos/resultados
 ```
 
+Para ejecutar las pruebas, instala también sus dependencias opcionales.
 Desde `02APE`, con su entorno activado:
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python -m pytest -q
 python -m pytest --collect-only -q
 python -m compileall -q main.py Modelo Controlador Vista tests
@@ -407,7 +343,7 @@ python -m pip check
 
 Los casos parametrizados se cuentan como subcasos distintos; las aserciones
 internas no se suman para inflar la cantidad. El resultado final, cantidad
-comprobada, comandos de integración real y cinco revisiones se registran en
+comprobada, comandos ejecutados y cinco revisiones se registran en
 [VALIDACION.md](VALIDACION.md), no se deducen del tamaño del código. Consulta
 [tests/README.md](tests/README.md) para el alcance de cada archivo de pruebas.
 
@@ -456,12 +392,11 @@ comprobada, comandos de integración real y cinco revisiones se registran en
   experimento; el programa no redondea para aceptar la entrada.
 - Si un arreglo no permite estimar, selecciona modo manual con parámetros
   válidos. Si una salida no puede escribirse, revisa permisos y el directorio.
-- NetLogo ausente o una JVM incompatible no impiden las simulaciones Python.
-  Revisa instalación, `NETLOGO_HOME`, JVM y [netlogo/README.md](netlogo/README.md).
 
 Se utilizó Codex para inspeccionar la guía y el repositorio, implementar y
 revisar el programa, diseñar y ejecutar pruebas y preparar documentación y
-manifiestos. [PROMPT.md](PROMPT.md) registra el encargo y las instrucciones
+manifiestos, y adaptar APE02 a las tecnologías básicas indicadas por el
+usuario. [PROMPT.md](PROMPT.md) registra el encargo y las instrucciones
 realmente utilizadas; [VALIDACION.md](VALIDACION.md) distingue lo ejecutado de
 lo pendiente. No se afirma haber leído diapositivas que no estén disponibles,
 ni se declara una nota o porcentaje de autoría de IA. El estudiante debe

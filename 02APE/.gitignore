@@ -11,5 +11,3 @@ resultados/*.csv
 !resultados/crecimiento.png
 !resultados/decrecimiento.png
 !resultados/constante.png
-!resultados/netlogo_oficial.png
-!resultados/netlogo_oficial.csv

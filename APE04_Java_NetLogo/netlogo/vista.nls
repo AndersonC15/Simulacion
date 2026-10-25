@@ -1,0 +1,60 @@
+; Vista: una grafica por escenario y tres comparaciones de sus columnas S/I/R.
+to actualizar-vista
+  let limite-x max (list 1 ultimo-indice)
+  let limite-y 1
+  if not empty? datos-java [ set limite-y max (list limite-y (sum but-first first datos-java)) ]
+  if not empty? datos-referencia [ set limite-y max (list limite-y (sum but-first first datos-referencia)) ]
+  foreach ["Escenario A" "Escenario B" "Susceptibles: A / B" "Infectados: A / B" "Recuperados: A / B"] [nombre ->
+    set-current-plot nombre
+    clear-plot
+    set-plot-x-range 0 limite-x
+    set-plot-y-range 0 limite-y
+  ]
+  foreach (range (indice + 1)) [t -> agregar-fila t]
+  display
+end
+
+to agregar-fila [t]
+  if t < length datos-java [
+    let fila item t datos-java
+    dibujar-fila "Escenario A" fila
+    dibujar-comparacion "A" fila
+  ]
+  if t < length datos-referencia [
+    let fila item t datos-referencia
+    dibujar-fila "Escenario B" fila
+    dibujar-comparacion "B" fila
+  ]
+end
+
+to dibujar-fila [nombre fila]
+  set-current-plot nombre
+  set-current-plot-pen "S"
+  plotxy item 0 fila item 1 fila
+  set-current-plot-pen "I"
+  plotxy item 0 fila item 2 fila
+  set-current-plot-pen "R"
+  plotxy item 0 fila item 3 fila
+end
+
+to dibujar-comparacion [pluma fila]
+  set-current-plot "Susceptibles: A / B"
+  set-current-plot-pen pluma
+  plotxy item 0 fila item 1 fila
+  set-current-plot "Infectados: A / B"
+  set-current-plot-pen pluma
+  plotxy item 0 fila item 2 fila
+  set-current-plot "Recuperados: A / B"
+  set-current-plot-pen pluma
+  plotxy item 0 fila item 3 fila
+end
+
+to-report valor-java [columna]
+  if empty? datos-java [ report 0 ]
+  report item columna (item (min (list indice (length datos-java - 1))) datos-java)
+end
+
+to-report valor-referencia [columna]
+  if empty? datos-referencia [ report 0 ]
+  report item columna (item (min (list indice (length datos-referencia - 1))) datos-referencia)
+end

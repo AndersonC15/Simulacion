@@ -43,7 +43,7 @@ def test_salir_no_calcula_experimento():
     assert "Hasta luego" in salida
 
 
-@pytest.mark.parametrize("opcion", ["", "texto", "12", "-1", "1.0"])
+@pytest.mark.parametrize("opcion", ["", "texto", "11", "12", "-1", "1.0"])
 def test_opcion_inexistente_se_recupera_y_permite_simular(opcion):
     controlador, salida, _ = ejecutar([opcion, "2", "0"])
     assert "Opción inexistente" in salida
@@ -240,59 +240,6 @@ def test_permiso_real_de_escritura_recupera_menu_y_cierra_figura(monkeypatch, tm
         destino.chmod(0o700)
 
 
-def test_opcion_netlogo_envia_experimento_guardado(monkeypatch):
-    recibidos = []
-
-    def enviar(vista):
-        recibidos.append(vista.controlador.experimento_actual())
-
-    monkeypatch.setattr(VistaConsola, "enviar_netlogo", enviar)
-    controlador, _, _ = ejecutar(["5", "11", "11", "0"])
-    assert len(recibidos) == 2
-    assert recibidos[0] is recibidos[1] is controlador.ultimo
-
-
-def test_adaptacion_consola_netlogo_reutiliza_serie_y_no_sobrescribe_exportacion(monkeypatch, tmp_path):
-    from Vista.puente_netlogo import InformeNetLogo, PuenteNetLogo
-
-    controlador = ControladorSimulacion(parametros=Parametros(sigma="10"))
-    anterior = controlador.ejecutar()
-    recibidos = []
-    rutas = []
-
-    def enviar(puente, experimento, netlogo_home=None, **kwargs):
-        recibidos.append(experimento)
-        rutas.append(kwargs["salida_plot"])
-        return InformeNetLogo("prueba", "prueba", "prueba", tuple(len(s.tiempos) for s in experimento.series),
-                              tuple(float(s.poblaciones[-1]) for s in experimento.series), 0, True,
-                              kwargs["salida_plot"], None)
-
-    monkeypatch.setattr(PuenteNetLogo, "enviar", enviar)
-    salida = []
-    vista = VistaConsola(controlador, salida=salida.append)
-    vista.enviar_netlogo(directorio=tmp_path)
-    vista.enviar_netlogo(directorio=tmp_path)
-    assert recibidos[0] is recibidos[1] is anterior
-    assert rutas[0] != rutas[1]
-    assert all(r.parent == tmp_path for r in rutas)
-    assert "Datos de retorno verificados: True" in "\n".join(salida)
-
-
-def test_error_netlogo_se_traduce_y_menu_permanece_utilizable(monkeypatch, tmp_path):
-    from Vista.puente_netlogo import ErrorNetLogo, PuenteNetLogo
-
-    def fallar(*args, **kwargs):
-        raise ErrorNetLogo("NetLogo no disponible en prueba controlada")
-
-    enviar_original = VistaConsola.enviar_netlogo
-    monkeypatch.setattr(PuenteNetLogo, "enviar", fallar)
-    monkeypatch.setattr(VistaConsola, "enviar_netlogo", lambda vista: enviar_original(vista, directorio=tmp_path))
-    controlador, salida, _ = ejecutar(["5", "11", "6", "0"])
-    assert controlador.ultimo is not None
-    assert "Error: NetLogo no disponible en prueba controlada" in salida
-    assert "Hasta luego" in salida
-
-
 def test_analisis_ruido_desde_menu_conserva_experimento_y_presenta_tres_niveles():
     controlador = ControladorSimulacion(parametros=Parametros(sigma="5"))
     anterior = controlador.ejecutar()
@@ -362,14 +309,16 @@ def test_cli_analisis_ruido_reproducible_y_presenta_dispersion(tmp_path):
     assert len([linea for linea in primera.stdout.splitlines() if linea.count(" | ") == 2]) == 4
 
 
-def test_cli_ruta_netlogo_inexistente_informa_error_sin_traceback(tmp_path):
+@pytest.mark.parametrize("opciones", [
+    ("--netlogo",), ("--netlogo-gui",), ("--netlogo-home", "instalacion retirada"),
+])
+def test_cli_rechaza_opciones_retiradas_sin_traceback(tmp_path, opciones):
     raiz = Path(__file__).resolve().parents[1]
-    proceso = subprocess.run([sys.executable, str(raiz / "main.py"), "--netlogo",
-                              "--netlogo-home", str(tmp_path / "NetLogo inexistente"),
-                              "--salida", str(tmp_path / "salidas")],
+    proceso = subprocess.run([sys.executable, str(raiz / "main.py"), *opciones],
                              cwd=tmp_path, text=True, capture_output=True, timeout=15)
-    assert proceso.returncode == 1
-    assert "NetLogo" in proceso.stderr + proceso.stdout
+    assert proceso.returncode == 2
+    assert "unrecognized arguments:" in proceso.stderr
+    assert opciones[0] in proceso.stderr
     assert "Traceback" not in proceso.stderr
 
 

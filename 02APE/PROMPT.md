@@ -2,33 +2,51 @@
 
 Fecha de la sesión: 24 de octubre de 2026 (America/Guayaquil).
 
-El usuario adjuntó el encargo reproducido abajo y añadió literalmente:
+## Instrucción vigente y precedencia
+
+El último mensaje del usuario corrige el alcance tecnológico de APE02: pide
+bibliotecas básicas y excluye NetLogo y SimPy. Esta instrucción prevalece sobre
+las partes incompatibles del encargo original reproducido más abajo. La guía
+PDF sí contiene una integración con NetLogo; se descarta de la implementación
+actual por esta corrección, sin atribuir a la guía una exigencia diferente.
+
+La versión actual utiliza Python, su biblioteca estándar, NumPy y Matplotlib.
+Las tablas se exportan con `csv`, incluido en Python. pytest se mantiene como
+herramienta opcional de
+pruebas en `requirements-dev.txt`. Las referencias a NetLogo, Java, pyNetLogo,
+otras prácticas y commits en la transcripción siguiente corresponden al
+encargo histórico; no son instrucciones nuevas para esta corrección ni
+requisitos de ejecución actuales de APE02.
+
+Último mensaje del usuario, reproducido literalmente:
+
+```text
+con que tecnologias esta hecho el APE02?
+ya que solo debo de usar estas tecnologias y las mas basicas, no hay que usar netlogo, la practica esta mal en ese aspecto as esto:
+puro pandas, matliplot o lo que sea
+pero cosas asi basicas, no simpy, ni netlogo
+```
+
+## Registro de asistencia
+
+El usuario adjuntó el encargo original y añadió literalmente:
 **«NO ALUCINES»**. No se inventan prompts anteriores de otras sesiones.
 
-Codex inspeccionó Git, los archivos actuales y la guía PDF local mediante
-`pdftotext`; implementó el dominio, controlador, consola, gráficas e integración,
-escribió y ejecutó pruebas, investigó fallos, preparó documentación y manifiestos
-y realizó los commits/pushes autorizados. Tres agentes auxiliares de Codex
-trabajaron en integración NetLogo, QA independiente y documentación/Maven del
-portafolio. Sus tareas técnicas fueron: verificar versiones/API y retorno real
-de las mismas series; contrastar matemática con Fraction/Decimal de mayor
-precisión y entradas adversas; inspeccionar imports y validar otros proyectos
-en copias temporales sin cambiar sus algoritmos. No son encargos históricos
-ni instrucciones adicionales atribuidas al usuario.
+Codex asiste en la implementación, revisión, pruebas y documentación de esta
+práctica. En esta corrección revisa el alcance de las dependencias y retira la
+integración excluida por el usuario. El código conserva los cuatro modelos,
+las gráficas, los escenarios, la semilla reproducible y el análisis del ruido.
+[VALIDACION.md](VALIDACION.md) registra los comandos realmente ejecutados y sus
+resultados, sin deducir comprobaciones del texto del encargo histórico.
 
-Se consultó documentación primaria de pyNetLogo/NetLogo; los enlaces y versiones
-están en netlogo/README.md. No se recibieron diapositivas adicionales en el
-equipo y no se afirma haberlas leído. La guía local y este encargo sustentan
-las decisiones académicas. VALIDACION.md distingue pruebas reales, simuladas,
-limitaciones y plataformas no comprobadas.
+La implementación y buena parte de las pruebas y documentación se realizaron
+con asistencia de IA. No se calcula un porcentaje de autoría mediante conteo
+de líneas. El estudiante debe revisar, ejecutar y poder explicar los archivos
+antes de entregar. No se atribuye una revisión humana ya realizada ni una
+aprobación del docente. No se recibieron diapositivas adicionales ni se afirma
+haberlas leído.
 
-La implementación nueva y buena parte de las pruebas y documentación fueron
-producidas con asistencia de IA. No se calcula un porcentaje de autoría: contar
-líneas no lo demuestra. El estudiante todavía debe revisar, ejecutar y poder
-explicar los archivos antes de entregar. No se atribuye una revisión humana
-ya realizada ni una aprobación del docente.
-
-## Encargo adjunto, transcripción íntegra
+## Encargo adjunto original — transcripción histórica íntegra
 
 Necesito que implementes desde cero mi práctica 02 de Simulación, trabajando sobre mi repositorio real. Después debes completar la documentación y los manifiestos de dependencias del portafolio.
 

@@ -8,8 +8,8 @@ estrategias y agrupa las series con sus parámetros y observaciones en un
 `ejecutar(nombre)` ejecuta una estrategia; sin nombre compara todas.
 `experimento_actual()` devuelve el experimento conservado, o lo calcula si no
 hay uno. Cambiar datos, parámetros o escenario invalida el anterior. Las
-vistas reciben ese objeto: volver a graficar o enviarlo a NetLogo no debe
-simular otra trayectoria estocástica silenciosamente.
+vistas reciben ese objeto: volver a graficar no debe simular otra trayectoria
+estocástica silenciosamente.
 
 Los escenarios crecimiento/decrecimiento/constante usan r=0.1/−0.1/0 y sigma=0
 para comparar el efecto de la tasa sin ruido. Son decisiones de implementación,

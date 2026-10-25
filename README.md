@@ -6,7 +6,7 @@ Cada práctica conserva sus instrucciones, código y entorno de ejecución.
 | Práctica | Contenido comprobado en el código | Instrucciones |
 |---|---|---|
 | [01APE](01APE/) | Índice de lluvia a partir de humedad, nubosidad y temperatura; comparación de pesos y gráficas. | [README](01APE/README.md) |
-| [02APE](02APE/) | Comparación del crecimiento poblacional exponencial, discreto, estocástico y continuo aproximado con Euler; puente Python–NetLogo. | [README](02APE/README.md) |
+| [02APE](02APE/) | Comparación del crecimiento poblacional exponencial, discreto, estocástico y continuo aproximado con Euler; Python, NumPy y Matplotlib. | [README](02APE/README.md) |
 | [03APE-Grupal](03APE-Grupal/) | Líneas de espera M/M/1 con SimPy, métricas teóricas y simuladas, animación y gráficas. | [README](03APE-Grupal/README.md) |
 | [04APE-Grupal](04APE-Grupal/) | SIR estocástico en Java; exportación CSV y visualización de las series en NetLogo. | [README](04APE-Grupal/APE04_Java_NetLogo/README.md) |
 
@@ -19,8 +19,8 @@ cd Simulacion
 
 Para las prácticas Python, entra a la carpeta indicada, crea allí un entorno
 virtual e instala su propio `requirements.txt`. No se comparte un manifiesto
-entre prácticas: APE01 usa Matplotlib; APE02 añade el cálculo poblacional y el
-puente; APE03 necesita SimPy, NumPy y Matplotlib. Consulta las versiones de
+entre prácticas: APE01 usa Matplotlib; APE02 utiliza NumPy y Matplotlib para
+los modelos poblacionales; APE03 necesita SimPy, NumPy y Matplotlib. Consulta las versiones de
 Python y los comandos exactos en cada README.
 
 APE04 requiere JDK 17 o posterior. Se conservan los scripts Bash y se incorpora

@@ -1,8 +1,11 @@
 # Pruebas de APE02
 
-Desde `02APE`, con el entorno del proyecto activado:
+Desde `02APE`, con el entorno del proyecto activado, instala las dependencias
+de la práctica y `pytest` para desarrollo:
 
 ```bash
+python -m pip install -r requirements.txt
+python -m pip install pytest
 python -m pytest -q
 python -m pytest --collect-only -q
 ```
@@ -30,12 +33,11 @@ También ejecuta procesos reales para comprobar EOF, comparación y exportación
 gráfica desde directorios con espacios. Comprueba el análisis de ruido mediante
 la opción `a` del menú y `--analizar-ruido` en la terminal. En POSIX envía una
 señal SIGINT real al subproceso cuando espera una opción; además inyecta
-`KeyboardInterrupt` durante distintas fases de lectura.
+`KeyboardInterrupt` durante distintas fases de lectura. También comprueba que
+la opción retirada `11` permite recuperar el menú y que los argumentos de la
+integración retirada se rechazan con un error de uso.
 
-Las comprobaciones de un puente simulado no acreditan comunicación real con
-NetLogo. La prueba de integración real y los requisitos externos se documentan
-por separado en `../VALIDACION.md`.
-
-La ejecución final incluyó 398 casos aprobados, con NetLogo habilitado. Sin
-`APE02_PROBAR_NETLOGO=1` se ejecutan 391 y se omiten las 7 pruebas externas.
-El desglose y los comandos del entorno limpio están en VALIDACION.md.
+Las pruebas del dominio y de las gráficas se ejecutan localmente. El programa
+usa Python, NumPy y Matplotlib; `pytest` solo se necesita para ejecutar esta
+suite. Los resultados comprobados y sus comandos se registran en
+`../VALIDACION.md`.
