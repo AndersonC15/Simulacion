@@ -1,5 +1,0 @@
-30 semillas compartidas por nivel: sigma | media final aproximada | desviación poblacional final aproximada
-0 | 2101.56904 | 0
-22.36804 | 2097.65817 | 90.56283
-44.73609 | 2093.74731 | 181.12566
-Se compara dispersión entre realizaciones; una curva no demuestra tendencia poblacional. El recorte a cero puede sesgar la media.
