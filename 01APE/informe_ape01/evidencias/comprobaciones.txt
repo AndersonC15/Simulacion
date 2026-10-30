@@ -1,0 +1,8 @@
+$ /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/01APE/.venv/bin/python -m compileall -q main.py Modelo Vista Controlador tests
+
+Código de salida: 0
+
+$ /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/01APE/.venv/bin/python -m pip check
+No broken requirements found.
+
+Código de salida: 0

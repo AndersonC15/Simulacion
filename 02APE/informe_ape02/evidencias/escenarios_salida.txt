@@ -1,0 +1,3 @@
+Archivos guardados: informe_ape02/evidencias/salidas/crecimiento.png informe_ape02/evidencias/salidas/crecimiento.csv
+Archivos guardados: informe_ape02/evidencias/salidas/decrecimiento.png informe_ape02/evidencias/salidas/decrecimiento.csv
+Archivos guardados: informe_ape02/evidencias/salidas/constante.png informe_ape02/evidencias/salidas/constante.csv
