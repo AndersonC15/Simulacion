@@ -1,11 +1,22 @@
 """Vista de consola y arranque. Las ecuaciones pertenecen a Modelo/."""
 import argparse
 from dataclasses import fields
+from decimal import Decimal
 
 from Controlador.simulacion import ControladorSimulacion
 from Modelo.datos import parsear_arreglo
 from Modelo.numeros import ErrorValidacion
 from Modelo.parametros import Parametros
+
+
+def formatear_numero(valor: Decimal | int) -> str:
+    """Muestra hasta cinco decimales sin redondear ni alterar el valor original."""
+    texto = format(valor, "f") if isinstance(valor, Decimal) else str(valor)
+    entero, _, decimales = texto.partition(".")
+    decimales = decimales[:5].rstrip("0")
+    if entero == "-0" and not decimales:
+        entero = "0"
+    return f"{entero}.{decimales}" if decimales else entero
 
 
 class VistaConsola:
@@ -15,25 +26,25 @@ class VistaConsola:
         self.salida = salida
 
     def mostrar_configuracion(self):
-        self.salida("Observaciones (períodos 0..n-1): " + "; ".join(map(str, self.controlador.datos)))
+        self.salida("Observaciones (períodos 0..n-1): " + "; ".join(map(formatear_numero, self.controlador.datos)))
         for campo in fields(Parametros):
-            self.salida(f"{campo.name} = {getattr(self.controlador.parametros, campo.name)}")
+            self.salida(f"{campo.name} = {formatear_numero(getattr(self.controlador.parametros, campo.name))}")
         self.salida("r y sigma iniciales son estimaciones descriptivas; dt y semilla son decisiones de implementación.")
 
     def presentar(self, experimento):
-        self.salida(f"Escenario: {experimento.escenario}. Tabla de extremos; se conservan todas las cifras calculadas.")
+        self.salida(f"Escenario: {experimento.escenario}. Tabla de extremos; máximo cinco decimales sin redondear.")
         for serie in experimento.series:
             self.salida(f"{serie.nombre} | {len(serie.tiempos)} puntos")
-            self.salida(f"Tiempo={serie.tiempos[0]} | Población={serie.poblaciones[0]}")
+            self.salida(f"Tiempo={formatear_numero(serie.tiempos[0])} | Población={formatear_numero(serie.poblaciones[0])}")
             if len(serie.tiempos) > 1:
-                self.salida(f"Tiempo={serie.tiempos[-1]} | Población={serie.poblaciones[-1]}")
+                self.salida(f"Tiempo={formatear_numero(serie.tiempos[-1])} | Población={formatear_numero(serie.poblaciones[-1])}")
         self.salida("La tasa exponencial es instantánea; la discreta es relativa por período. Euler aproxima dP/dt=rP.")
 
     def modificar(self):
         actual = self.controlador.parametros
         nuevos = {}
         for campo in fields(Parametros):
-            texto = self.entrada(f"{campo.name} [{getattr(actual, campo.name)}] (Enter conserva): ")
+            texto = self.entrada(f"{campo.name} [{formatear_numero(getattr(actual, campo.name))}] (Enter conserva): ")
             if texto.strip():
                 if campo.name in ("semilla", "precision"):
                     if len(texto) > 256 or not texto.strip().isascii() or not texto.strip().isdigit():
@@ -65,7 +76,7 @@ class VistaConsola:
         resumenes = analizar_ruido(self.controlador.parametros)
         self.salida("30 semillas compartidas por nivel: sigma | media final aproximada | desviación poblacional final aproximada")
         for resumen in resumenes:
-            self.salida(f"{resumen.sigma} | {resumen.media} | {resumen.desviacion}")
+            self.salida(f"{formatear_numero(resumen.sigma)} | {formatear_numero(resumen.media)} | {formatear_numero(resumen.desviacion)}")
         self.salida("Se compara dispersión entre realizaciones; una curva no demuestra tendencia poblacional. El recorte a cero puede sesgar la media.")
         return resumenes
 

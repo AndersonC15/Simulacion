@@ -139,7 +139,7 @@ Las siete observaciones representan períodos consecutivos de 0 a 6. El primer d
 | `semilla` | Semilla del generador local: `42`. |
 | `precision` | Dígitos de precisión para las aproximaciones: `50`, configurable entre 32 y 80. |
 
-La tabla abrevia los parámetros estimados para facilitar su lectura; la consola muestra sus cifras completas. `dt`, semilla y precisión son decisiones de implementación. La configuración manual `Parametros()` tiene tasa `0.1` y sigma `0`; el arranque habitual utiliza la estimación del arreglo.
+La consola muestra como máximo cinco decimales, truncados sin redondear, en resultados, observaciones, parámetros y análisis de ruido. Omite los ceros decimales finales: `2204.731900…` se muestra como `2204.7319`. Los cálculos y los CSV conservan su precisión; al pulsar Enter para conservar un parámetro se mantiene el valor completo. `dt`, semilla y precisión son decisiones de implementación. La configuración manual `Parametros()` tiene tasa `0.1` y sigma `0`; el arranque habitual utiliza la estimación del arreglo.
 
 Para introducir observaciones utiliza punto y coma entre elementos:
 

@@ -70,11 +70,13 @@ def test_comparacion_presenta_las_cuatro_series_con_configuracion_comun():
     assert all(s.nombre in salida for s in controlador.ultimo.series)
 
 
-def test_consultar_configuracion_presenta_datos_y_decimales_completos():
+def test_consultar_configuracion_trunca_decimales_sin_alterar_parametros():
     controlador = ControladorSimulacion(parametros=Parametros(p0="1.2345678901234567890123456789"))
     _, salida, _ = ejecutar(["6", "0"], controlador)
     assert "1000; 1100; 1250; 1400; 1600; 1850; 2100" in salida
-    assert "1.2345678901234567890123456789" in salida
+    assert "p0 = 1.23456\n" in salida
+    assert "1.2345678901234567890123456789" not in salida
+    assert controlador.parametros.p0 == Decimal("1.2345678901234567890123456789")
     assert "semilla = 42" in salida
     assert controlador.ultimo is None
 
