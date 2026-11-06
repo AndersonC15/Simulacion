@@ -14,7 +14,8 @@ class VistaGraficas:
     def guardar(self, analisis: Analisis, directorio: Path) -> None:
         valores = analisis.muestra.valores
         nombre = analisis.muestra.parametros.nombre
-        chi, ks = analisis.pruebas[:2]
+        chi = next(p for p in analisis.pruebas if p.nombre == "chi_cuadrado")
+        ks = next(p for p in analisis.pruebas if p.nombre == "ks")
         plt.rcParams.update({"font.size": 11, "axes.spines.top": False, "axes.spines.right": False})
 
         figura, eje = plt.subplots(figsize=(9, 5), layout="constrained")
