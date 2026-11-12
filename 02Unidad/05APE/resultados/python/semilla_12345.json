@@ -1,0 +1,24 @@
+{
+  "lenguaje": "Python",
+  "parametros": {
+    "a": 1664525,
+    "c": 1013904223,
+    "m": 4294967296,
+    "semilla": 12345
+  },
+  "cantidad": 10000,
+  "periodo": {
+    "coprimos": true,
+    "factores_dividen": true,
+    "regla_cuatro": true,
+    "periodo_teorico": 4294967296,
+    "preperiodo_observado": null,
+    "periodo_observado": null
+  },
+  "estadisticas_descriptivas": {
+    "minimo": 5.908263847231865e-05,
+    "maximo": 0.9999259654432535,
+    "media": 0.4987698479698971,
+    "varianza_poblacional": 0.08301176684699318
+  }
+}

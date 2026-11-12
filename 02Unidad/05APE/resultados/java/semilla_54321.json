@@ -1,0 +1,16 @@
+{
+  "lenguaje": "Java",
+  "parametros": {"a": 1664525, "c": 1013904223, "m": 4294967296, "semilla": 54321},
+  "cantidad": 10000,
+  "periodo": {
+    "coprimos": true,
+    "factores_dividen": true,
+    "regla_cuatro": true,
+    "periodo_teorico": 4294967296,
+    "preperiodo_observado": null,
+    "periodo_observado": null
+  },
+  "estadisticas_descriptivas": {
+    "minimo": 7.83910509198904E-5, "maximo": 0.9998461836948991, "media": 0.49886969981957224, "varianza_poblacional": 0.08358832806562112
+  }
+}

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ape05-lcg"
+version = "1.0.0"
+description = "Práctica 05 de Simulación: generador congruencial lineal"
+requires-python = ">=3.11"
+dependencies = ["matplotlib>=3.10,<4"]
+
+[project.scripts]
+ape05-python = "lcg_practica.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

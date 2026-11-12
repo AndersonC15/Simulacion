@@ -2,6 +2,18 @@
 
 Práctica de Simulación de quinto ciclo. Dos programas independientes, en **Python y Java**, implementan el LCG y las pruebas de Chi-cuadrado, Kolmogorov–Smirnov y rachas. Se comparan sus secuencias completas y se genera la tabla de estimación de π y tiempos solicitada en la guía.
 
+## Informe para entregar
+
+El informe académico está en [APE06-CoelloAnderson-U2-Simulacion.pdf](APE06-CoelloAnderson-U2-Simulacion.pdf), en la raíz del proyecto y fuera de la carpeta de resultados excluida de Git. Sigue el formato institucional de los informes anteriores: encabezado de la UNL, identificación, objetivos, materiales, metodología, resultados con tablas y gráficas, preguntas de control, conclusiones, bibliografía y anexos. Incluye el nombre verificado del estudiante y los datos de la guía 006.
+
+Para regenerarlo después de ejecutar y verificar ambos programas:
+
+```bash
+python/.venv/bin/python scripts/generar_informe.py
+```
+
+El generador lee los resultados existentes, compara nuevamente las secuencias y exige las tres configuraciones documentadas, N=10 000, alfa=0.05, los cuatro tamaños de la guía y cinco mediciones por caso. También comprueba las medianas frente a los tiempos individuales y lee los registros de pytest y Maven; no vuelve a ejecutar las pruebas ni los benchmarks. Si cambian los parámetros de las configuraciones, requiere revisar el análisis académico. Para la tipografía utiliza Times New Roman o, como alternativa, DejaVu Serif instalada en el sistema. La procedencia del encabezado se documenta en [docs/recursos/README.md](docs/recursos/README.md).
+
 ## Preparar y ejecutar
 
 Requisitos: **Python >= 3.12, JDK 25 y Maven**. El `pom.xml` está configurado con `release=25`. En este equipo Java 25 tenía solamente el entorno de ejecución, mientras el compilador predeterminado era 21. `preparar.sh` resuelve esto instalando un JDK Temurin local en `.tools/jdk-25` si no encuentra un compilador compatible. Verifica el SHA-256 de la descarga y no cambia el Java del sistema. Se requiere conexión durante la preparación; los experimentos posteriores se ejecutan localmente.
@@ -15,7 +27,7 @@ Desde esta carpeta (`02Unidad/06APE`):
 
 `preparar.sh` crea `python/.venv`, instala las versiones de `requirements.txt`, registra el paquete Python y compila/verifica Java con Maven. `ejecutar_todo.sh` ejecuta los dos programas, mide π para los cuatro tamaños de la guía, compara los resultados y crea el informe. Los scripts resuelven su ubicación y también pueden invocarse desde otra carpeta.
 
-El resultado principal es **`resultados/comparacion/informe.pdf`**. También se genera `informe.md` para editar el contenido académico antes de una entrega institucional. No se inventan datos de portada del estudiante.
+La ejecución completa genera el informe técnico automático **`resultados/comparacion/informe.pdf`** y su versión `informe.md`. El informe académico para entregar es el PDF de la raíz indicado arriba; se regenera con su comando propio.
 
 ## Ejecutar Python por separado
 

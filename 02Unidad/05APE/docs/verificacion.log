@@ -1,0 +1,193 @@
+test_cada_condicion_hull_dobell (test_modelo.PruebasLCG.test_cada_condicion_hull_dobell) ... ok
+test_ciclo_pequeno_completo_y_preperiodo (test_modelo.PruebasLCG.test_ciclo_pequeno_completo_y_preperiodo) ... ok
+test_controlador_admite_estrategia_y_vista_inyectadas (test_modelo.PruebasLCG.test_controlador_admite_estrategia_y_vista_inyectadas) ... ok
+test_hull_dobell_no_confunde_muestra_y_periodo (test_modelo.PruebasLCG.test_hull_dobell_no_confunde_muestra_y_periodo) ... ok
+test_limites_y_aritmetica_exacta (test_modelo.PruebasLCG.test_limites_y_aritmetica_exacta) ... ok
+test_reproducibilidad_rango_y_cambio_de_semilla (test_modelo.PruebasLCG.test_reproducibilidad_rango_y_cambio_de_semilla) ... ok
+test_vector_conocido_y_continuidad (test_modelo.PruebasLCG.test_vector_conocido_y_continuidad) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.005s
+
+OK
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< ec.edu.simulacion:ape05-lcg >---------------------
+[INFO] Building APE 05 - Generador Congruencial Lineal 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ ape05-lcg ---
+[INFO] skip non existing resourceDirectory /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/java/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ape05-lcg ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 11 source files with javac [debug release 21] to target/classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ ape05-lcg ---
+[INFO] skip non existing resourceDirectory /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/java/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ape05-lcg ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ape05-lcg ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running ec.edu.simulacion.GeneradorLCGTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.063 s -- in ec.edu.simulacion.GeneradorLCGTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ ape05-lcg ---
+[INFO] Building jar: /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/java/target/ape05-lcg-1.0.0.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.595 s
+[INFO] Finished at: 2026-11-08T16:40:55-05:00
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< ec.edu.simulacion:ape05-lcg >---------------------
+[INFO] Building APE 05 - Generador Congruencial Lineal 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ ape05-lcg ---
+[INFO] skip non existing resourceDirectory /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/java/src/main/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ape05-lcg ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ ape05-lcg ---
+[INFO] skip non existing resourceDirectory /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/java/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ape05-lcg ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ape05-lcg ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ ape05-lcg ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.630 s
+[INFO] Finished at: 2026-11-08T16:40:57-05:00
+[INFO] ------------------------------------------------------------------------
+
+Python | semilla=12345 | n=10000
+   n           Xn                Un (decimal exacto)
+   1     87628868   0.020402685739099979400634765625
+   2     71072467 0.01654784823767840862274169921875
+   3   2332836374  0.5431557944975793361663818359375
+   4   2726892157 0.63490405608899891376495361328125
+   5   3908547000    0.91002951376140117645263671875
+   6    483019191 0.11246166913770139217376708984375
+   7   2129828778  0.4958894052542746067047119140625
+   8   2355140353 0.54834884428419172763824462890625
+   9   2560230508   0.596100117079913616180419921875
+  10   3364893915 0.78345041605643928050994873046875
+  11    171172990  0.0398543174378573894500732421875
+  12   3194601925 0.74380122241564095020294189453125
+  13   4148119648      0.965809367597103118896484375
+  14    316399679 0.07366754091344773769378662109375
+  15   3004788882  0.6996069294400513172149658203125
+  16   1976948425 0.46029417426325380802154541015625
+  17   1702883732   0.396483515389263629913330078125
+  18   4121112547 0.95952128688804805278778076171875
+  19   1744294886  0.4061253010295331478118896484375
+  20   4092090893 0.95276415650732815265655517578125
+Período teórico (Hull–Dobell): 4294967296
+Período observado: no detectado en la muestra
+Archivos: resultados/python/semilla_12345.csv / .json / .png
+
+Java | semilla=12345 | n=10000
+   n           Xn                Un (decimal exacto)
+   1     87628868   0.020402685739099979400634765625
+   2     71072467 0.01654784823767840862274169921875
+   3   2332836374  0.5431557944975793361663818359375
+   4   2726892157 0.63490405608899891376495361328125
+   5   3908547000    0.91002951376140117645263671875
+   6    483019191 0.11246166913770139217376708984375
+   7   2129828778  0.4958894052542746067047119140625
+   8   2355140353 0.54834884428419172763824462890625
+   9   2560230508   0.596100117079913616180419921875
+  10   3364893915 0.78345041605643928050994873046875
+  11    171172990  0.0398543174378573894500732421875
+  12   3194601925 0.74380122241564095020294189453125
+  13   4148119648      0.965809367597103118896484375
+  14    316399679 0.07366754091344773769378662109375
+  15   3004788882  0.6996069294400513172149658203125
+  16   1976948425 0.46029417426325380802154541015625
+  17   1702883732   0.396483515389263629913330078125
+  18   4121112547 0.95952128688804805278778076171875
+  19   1744294886  0.4061253010295331478118896484375
+  20   4092090893 0.95276415650732815265655517578125
+Período teórico (Hull–Dobell): 4294967296
+Período observado: no detectado en la muestra
+Archivos: resultados/java/semilla_12345.csv / .json / .png
+
+Python | semilla=54321 | n=10000
+   n           Xn                Un (decimal exacto)
+   1   1238253532   0.288303366862237453460693359375
+   2   1708513675 0.39779433864168822765350341796875
+   3   3683344750  0.8575955289416015148162841796875
+   4   1863498229 0.43387949210591614246368408203125
+   5   2137457360     0.4976655729115009307861328125
+   6    102299631 0.02381848893128335475921630859375
+   7   3033777282  0.7063563172705471515655517578125
+   8   4230855161 0.98507273034192621707916259765625
+   9   1814797060   0.422540367580950260162353515625
+  10   1036872339 0.24141565407626330852508544921875
+  11   2695818966  0.6276692650280892848968505859375
+  12   1801476157 0.41943885316140949726104736328125
+  13   2976955512    0.69312646798789501190185546875
+  14   2448971127 0.57019552378915250301361083984375
+  15   4038571114  0.9403031119145452976226806640625
+  16   1174362305 0.27342753135599195957183837890625
+  17    849107756   0.197698305360972881317138671875
+  18     33496219 0.00779894622974097728729248046875
+  19   3337365822  0.7770410324446856975555419921875
+  20   1978253189 0.46059796330519020557403564453125
+Período teórico (Hull–Dobell): 4294967296
+Período observado: no detectado en la muestra
+Archivos: resultados/python/semilla_54321.csv / .json / .png
+
+Java | semilla=54321 | n=10000
+   n           Xn                Un (decimal exacto)
+   1   1238253532   0.288303366862237453460693359375
+   2   1708513675 0.39779433864168822765350341796875
+   3   3683344750  0.8575955289416015148162841796875
+   4   1863498229 0.43387949210591614246368408203125
+   5   2137457360     0.4976655729115009307861328125
+   6    102299631 0.02381848893128335475921630859375
+   7   3033777282  0.7063563172705471515655517578125
+   8   4230855161 0.98507273034192621707916259765625
+   9   1814797060   0.422540367580950260162353515625
+  10   1036872339 0.24141565407626330852508544921875
+  11   2695818966  0.6276692650280892848968505859375
+  12   1801476157 0.41943885316140949726104736328125
+  13   2976955512    0.69312646798789501190185546875
+  14   2448971127 0.57019552378915250301361083984375
+  15   4038571114  0.9403031119145452976226806640625
+  16   1174362305 0.27342753135599195957183837890625
+  17    849107756   0.197698305360972881317138671875
+  18     33496219 0.00779894622974097728729248046875
+  19   3337365822  0.7770410324446856975555419921875
+  20   1978253189 0.46059796330519020557403564453125
+Período teórico (Hull–Dobell): 4294967296
+Período observado: no detectado en la muestra
+Archivos: resultados/java/semilla_54321.csv / .json / .png
+Comparación correcta: 20 000 pares Python/Java idénticos (dos semillas).
+Informe y tablas: /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/05APE/resultados
+
+Revisión de uso adicional: ayuda, cinco entradas inválidas por lenguaje, semillas límite y rutas con espacios: OK.
+Comparador: rechaza CSV alterado con código 1. Enlaces locales y copia SHA-256 verificados.
