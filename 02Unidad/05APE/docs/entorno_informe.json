@@ -1,0 +1,8 @@
+{
+  "python": "Python 3.14.4",
+  "java": "openjdk version \"21.0.13.0.3\" 2026-10-24\nOpenJDK Runtime Environment (build 21.0.13.0.3+1-1-26.04.1-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.13.0.3+1-1-26.04.1-Ubuntu, mixed mode, sharing)",
+  "javac": "javac 21.0.13.0.3",
+  "maven": "\u001b[1mApache Maven 3.9.12\u001b[m\nMaven home: /usr/share/maven\nJava version: 21.0.13.0.3, vendor: Ubuntu, runtime: /usr/lib/jvm/java-21-openjdk-amd64\nDefault locale: en, platform encoding: UTF-8\nOS name: \"linux\", version: \"7.0.0-43-generic\", arch: \"amd64\", family: \"unix\"",
+  "sistema": "Linux",
+  "matplotlib": "3.11.2"
+}

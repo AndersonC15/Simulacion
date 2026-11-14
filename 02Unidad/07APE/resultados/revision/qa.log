@@ -1,0 +1,15 @@
+test_01_vector_conocido_y_aritmetica_extrema (test_qa.CampanasQA.test_01_vector_conocido_y_aritmetica_extrema) ... ok
+test_02_geometria_y_consumo_exacto_2n (test_qa.CampanasQA.test_02_geometria_y_consumo_exacto_2n) ... ok
+test_03_fuentes_y_parametros_invalidos (test_qa.CampanasQA.test_03_fuentes_y_parametros_invalidos) ... ok
+test_04_reproducibilidad_prefijos_y_semillas (test_qa.CampanasQA.test_04_reproducibilidad_prefijos_y_semillas) ... ok
+test_05_cli_adversaria_ambos_lenguajes (test_qa.CampanasQA.test_05_cli_adversaria_ambos_lenguajes) ... ok
+test_06_integracion_exacta_y_ruta_con_espacios (test_qa.CampanasQA.test_06_integracion_exacta_y_ruta_con_espacios) ... ok
+test_07_detectar_manipulacion_estado_incluso_con_hash_actualizado (test_qa.CampanasQA.test_07_detectar_manipulacion_estado_incluso_con_hash_actualizado) ... ok
+test_08_detectar_resultados_tiempos_y_metadatos_incoherentes (test_qa.CampanasQA.test_08_detectar_resultados_tiempos_y_metadatos_incoherentes) ... ok
+test_09_rechazar_salida_no_escribible_y_mediana (test_qa.CampanasQA.test_09_rechazar_salida_no_escribible_y_mediana) ... ok
+test_10_carga_un_millon_y_semilla_limite (test_qa.CampanasQA.test_10_carga_un_millon_y_semilla_limite) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 3.502s
+
+OK

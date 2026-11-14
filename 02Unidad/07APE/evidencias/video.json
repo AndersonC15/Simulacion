@@ -1,0 +1,13 @@
+{
+  "duracion_segundos": 76.0,
+  "fotogramas": 760,
+  "fps": 10,
+  "resolucion": [
+    1280,
+    720
+  ],
+  "audio": false,
+  "contenido": "modelo animado con puntos reales; código, salidas capturadas, tablas y gráficas",
+  "sha256_video": "a548b62d7c51e6a8cc1352c564dcf5ab28775ec6d7c1c2229885697838ec3669",
+  "sha256_tabla": "aa1bec66833abb2de1467305ae23871b612d91654330f76d3e882fb1fdbe1f6f"
+}

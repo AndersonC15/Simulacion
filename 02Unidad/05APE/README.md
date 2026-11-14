@@ -4,6 +4,28 @@ Práctica de **Simulación, quinto ciclo de Computación**. Implementa los ocho 
 
 El proyecto ya incluye resultados ejecutados: [informe con tablas, gráficas, análisis, preguntas y conclusiones](resultados/informe.md). La cobertura de cada requisito está en [docs/requisitos.md](docs/requisitos.md); las cinco revisiones están en [docs/revisiones.md](docs/revisiones.md).
 
+## Informe académico para entregar
+
+El informe institucional está en [APE05-CoelloAnderson-U2-Simulacion.pdf](APE05-CoelloAnderson-U2-Simulacion.pdf).
+Conserva el formato y el nombre del estudiante verificados en el informe APE 06;
+los datos de la práctica, el procedimiento y los resultados corresponden al APE 05.
+Incluye las tablas de 20 observaciones de ambas semillas, las cuatro gráficas,
+el análisis del período, las cinco preguntas de control, conclusiones y anexos.
+La procedencia se documenta en [docs/recursos/README.md](docs/recursos/README.md).
+
+Para regenerarlo desde `05APE`, después de preparar el proyecto:
+
+```bash
+.venv/bin/python -m pip install -r python/requirements-informe.txt
+.venv/bin/python scripts/generar_informe.py
+```
+
+El generador valida los 10 000 valores de ambos lenguajes y ambas semillas,
+los resúmenes, las gráficas y el registro de verificación conservado antes de
+reemplazar el PDF. No vuelve a ejecutar los experimentos ni modifica sus datos.
+Requiere Times New Roman o DejaVu Serif instalada. ReportLab se utiliza solo
+para este documento; no es necesario para ejecutar el generador LCG.
+
 ## Requisitos
 
 - Linux o macOS y Bash.

@@ -1,0 +1,19 @@
+{
+  "correcto": true,
+  "estados_comparados": 2000000,
+  "puntos_comparados": 1000000,
+  "sha256_secuencia": "43ad15ded3670925917a4e0555e7107504ce50f48cfebe68cbe53a35c9e76842",
+  "igualdad": "exacta en todos los estados, puntos, conteos y estimaciones",
+  "tamanos": [
+    1000,
+    10000,
+    100000,
+    1000000
+  ],
+  "parametros": {
+    "semilla": 123457,
+    "a": 16807,
+    "c": 0,
+    "m": 2147483647
+  }
+}
