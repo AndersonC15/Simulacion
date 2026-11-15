@@ -4,6 +4,8 @@ En esta práctica de **Simulación, quinto ciclo de Computación**, implementé 
 
 Organicé ambos programas con **MVC** y utilicé **Strategy** para separar la fuente de números del estimador. La explicación del modelo, los componentes y la demostración está en [GUIA_EXPOSICION.md](GUIA_EXPOSICION.md).
 
+Las diapositivas para exponer están en [PowerPoint](presentacion/APE07-CoelloAnderson-Exposicion.pptx) y [PDF](presentacion/APE07-CoelloAnderson-Exposicion.pdf). El [guion de la presentación](presentacion/NOTAS_EXPOSICION.md) incluye notas por diapositiva y los comandos para la demostración.
+
 ## Informe para entregar
 
 El informe académico conservado está en [APE07-CoelloAnderson-U2-Simulacion.pdf](APE07-CoelloAnderson-U2-Simulacion.pdf). Incluye el modelo matemático, la metodología, los resultados, las gráficas, ocho preguntas de análisis, cinco preguntas de control y las conclusiones de la ejecución original.

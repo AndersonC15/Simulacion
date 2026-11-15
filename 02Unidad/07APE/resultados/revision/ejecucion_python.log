@@ -1,7 +1,7 @@
 Monte Carlo | Python | cuadrado [-1,1)² y círculo de radio 1
          N     Dentro     Pi estimado  Error absoluto     Mediana (s)
-      1000        765     3.060000000     0.081592654        0.000364
-     10000       7850     3.140000000     0.001592654        0.004021
-    100000      78608     3.144320000     0.002727346        0.039847
-   1000000     785969     3.143876000     0.002283346        0.393130
+      1000        765     3.060000000     0.081592654        0.000695
+     10000       7850     3.140000000     0.001592654        0.006996
+    100000      78608     3.144320000     0.002727346        0.070932
+   1000000     785969     3.143876000     0.002283346        0.707523
 Archivos: /home/anderson-coello/Escritorio/WorkSpace-QUINTOCICLO/Simulacion/APEs-Simulacion/02Unidad/07APE/resultados/python
