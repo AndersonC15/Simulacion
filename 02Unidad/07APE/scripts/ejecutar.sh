@@ -9,4 +9,4 @@ mvn -B -ntp -f java/pom.xml package -DskipTests > resultados/revision/compilacio
 .venv/bin/python -m ape07 | tee resultados/revision/ejecucion_python.log
 java -jar java/target/ape07.jar | tee resultados/revision/ejecucion_java.log
 .venv/bin/python scripts/entrega.py
-echo 'Resultados y gráficas generados. Tras verificar, genera el informe académico y el video.'
+echo 'Resultados y gráficas generados en resultados/comparacion. Ejecuta bash scripts/verificar.sh para comprobarlos.'

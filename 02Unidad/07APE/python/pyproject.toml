@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ape07-montecarlo"
+version = "1.0.0"
+description = "Estimación de pi mediante Monte Carlo y el generador MINSTD"
+requires-python = ">=3.11"
+
+[project.scripts]
+ape07 = "ape07.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

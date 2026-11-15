@@ -5,4 +5,4 @@ __pycache__/
 java/target/
 .cache/
 resultados/*/secuencia.bin
-*.tmp.mp4
+python/build/

@@ -10,6 +10,6 @@ test_09_rechazar_salida_no_escribible_y_mediana (test_qa.CampanasQA.test_09_rech
 test_10_carga_un_millon_y_semilla_limite (test_qa.CampanasQA.test_10_carga_un_millon_y_semilla_limite) ... ok
 
 ----------------------------------------------------------------------
-Ran 10 tests in 3.502s
+Ran 10 tests in 6.832s
 
 OK

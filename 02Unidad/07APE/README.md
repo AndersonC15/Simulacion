@@ -1,45 +1,48 @@
-# APE 07 — Estimación de π con Monte Carlo en Python y Java
+# APE 07 — Estimación de π mediante Monte Carlo
 
-En esta práctica de **Simulación, quinto ciclo de Computación**, implementé el mismo experimento Monte Carlo en Python y Java. Genero puntos en un cuadrado, cuento los que pertenecen a un círculo inscrito y comparo la estimación de π, el error absoluto y el tiempo para cuatro tamaños de muestra.
+Práctica de **Simulación, quinto ciclo de Computación**. Implementé el mismo experimento en **Python y Java** para aproximar π mediante Monte Carlo: generar puntos en un cuadrado y contar los que caen dentro del círculo inscrito. Comparo las estimaciones, el error absoluto y los tiempos para 1 000, 10 000, 100 000 y 1 000 000 de puntos.
 
-Organicé ambos programas con **MVC** y utilicé **Strategy** para separar la fuente de números del estimador. La explicación del modelo, los componentes y la demostración está en [GUIA_EXPOSICION.md](GUIA_EXPOSICION.md).
-
-Las diapositivas para exponer están en [PowerPoint](presentacion/APE07-CoelloAnderson-Exposicion.pptx) y [PDF](presentacion/APE07-CoelloAnderson-Exposicion.pdf). El [guion de la presentación](presentacion/NOTAS_EXPOSICION.md) incluye notas por diapositiva y los comandos para la demostración.
+Organicé ambos programas con **MVC** y utilicé **Strategy** para separar la fuente de números pseudoaleatorios del estimador.
 
 ## Informe para entregar
 
-El informe académico conservado está en [APE07-CoelloAnderson-U2-Simulacion.pdf](APE07-CoelloAnderson-U2-Simulacion.pdf). Incluye el modelo matemático, la metodología, los resultados, las gráficas, ocho preguntas de análisis, cinco preguntas de control y las conclusiones de la ejecución original.
+El informe académico está en [APE07-CoelloAnderson-U2-Simulacion.pdf](APE07-CoelloAnderson-U2-Simulacion.pdf). Incluye objetivos, modelo matemático, procedimiento, resultados, gráficas, preguntas de análisis y control, conclusiones, bibliografía y anexos. Los anexos contienen los enlaces del repositorio y del video de demostración.
 
-La carpeta actual conserva el código, las pruebas, los resultados y el PDF. Retiré la guía original, los documentos de análisis, la versión Markdown del informe, el video y los scripts que generaban el informe y el video. El PDF todavía contiene referencias a ese material. Los scripts `entregar.sh` y `auditar_entrega.py` también dependen de archivos retirados; su situación se detalla más adelante.
+El PDF conserva las mediciones documentadas. Los scripts reconstruyen los resultados y las gráficas; el informe se actualiza por separado. Si repito las mediciones, debo revisar los tiempos del PDF antes de entregar una nueva versión.
 
 ## Requisitos
 
 - Linux y Bash para los scripts incluidos.
-- **Python 3.11 o superior**, con `venv` y `pip`. El entorno local utiliza Python 3.14.4.
-- **JDK 21 o superior**, con `java` y `javac`, y **Maven**. El proyecto Java compila con `release=21`.
-- Conexión para descargar dependencias durante la preparación cuando no estén disponibles localmente.
+- **Python 3.11 o superior**, con `venv` y `pip`.
+- **JDK 21 o superior**, con `java` y `javac`, y **Maven**. El proyecto compila con `release=21`.
+- Conexión para descargar dependencias durante la preparación, si no están disponibles localmente.
 
-Java ejecuta el experimento con clases del JDK; JUnit es una dependencia de pruebas. Python utiliza NumPy y Pandas para la comparación y el análisis, y Matplotlib para las gráficas. Los programas de consola y las gráficas no necesitan abrir una ventana.
+El experimento Java utiliza clases del JDK; JUnit se usa solamente en las pruebas. Python utiliza NumPy y Pandas para verificar y analizar los archivos, y Matplotlib para las gráficas. No se necesita abrir una ventana gráfica.
 
-## Preparar y ejecutar
+## Preparar y ejecutar todo
 
 Desde esta carpeta, `02Unidad/07APE`:
 
 ```bash
 bash scripts/preparar.sh
 bash scripts/ejecutar.sh
+```
+
+`preparar.sh` comprueba las herramientas, crea `.venv` en la raíz de `07APE`, instala las dependencias y el paquete Python en modo editable, y compila y prueba Java mediante `java/pom.xml`. `ejecutar.sh` recompila Java, ejecuta ambos programas con los valores predeterminados y genera las tablas comparativas y las gráficas.
+
+Después de ejecutar los experimentos, compruebo las pruebas y los resultados:
+
+```bash
 bash scripts/verificar.sh
 ```
 
-`preparar.sh` comprueba las herramientas, crea `.venv`, instala las dependencias y el paquete Python en modo editable, y compila y prueba Java con Maven. No descarga ni configura un JDK.
+En una copia recién descargada debo seguir el orden **preparar → ejecutar → verificar**: los binarios `secuencia.bin` están excluidos de Git y se reconstruyen al ejecutar ambos programas. La verificación los necesita para comparar los resultados principales.
 
-`ejecutar.sh` empaqueta Java, ejecuta los dos programas con la configuración predeterminada y reconstruye la comparación y las gráficas. `verificar.sh` ejecuta las pruebas de ambos lenguajes y vuelve a comparar los resultados principales existentes.
-
-Estos comandos **reemplazan archivos con los mismos nombres**. Al volver a ejecutar el experimento cambian las mediciones de tiempo y el PDF conservado no se actualiza automáticamente. Para exponer manteniendo los datos originales, utiliza las carpetas de demostración de la siguiente sección.
-
-Los scripts Bash resuelven la raíz desde su propia ubicación. Desde `02Unidad` también se pueden invocar con `bash 07APE/scripts/preparar.sh`, por ejemplo. Los comandos individuales siguientes utilizan rutas relativas y deben ejecutarse desde `07APE`.
+Los comandos reemplazan las salidas con los mismos nombres. Los scripts resuelven la raíz desde su propia ubicación y también pueden invocarse desde otra carpeta. `.venv` y `java/target` se recrean al preparar el proyecto en otra computadora.
 
 ## Ejecutar Python por separado
+
+Para demostrar el programa sin reemplazar los datos principales del informe:
 
 ```bash
 .venv/bin/python -m ape07 \
@@ -49,19 +52,33 @@ Los scripts Bash resuelven la raíz desde su propia ubicación. Desde `02Unidad`
   --salida resultados/demo_python
 ```
 
-No es necesario activar el entorno. También se instala el comando `.venv/bin/ape07`. La ayuda está disponible con `.venv/bin/python -m ape07 --help`.
+También puedo activar el entorno como en las prácticas anteriores:
 
-El paquete se configura en [python/pyproject.toml](python/pyproject.toml). [python/requirements.txt](python/requirements.txt) declara rangos de dependencias y [python/requirements-lock.txt](python/requirements-lock.txt) conserva las versiones exactas del entorno original; la preparación utiliza el primero. ReportLab permanece de la generación anterior del PDF e imageio-ffmpeg se utiliza en la auditoría antigua del video; no participan en el estimador.
+```bash
+source .venv/bin/activate
+python -m ape07 --salida resultados/demo_python
+deactivate
+```
+
+Se instala además el comando `.venv/bin/ape07`. Para consultar las opciones:
+
+```bash
+.venv/bin/python -m ape07 --help
+```
+
+Instalación manual de Python, equivalente a la parte Python de la preparación:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r python/requirements.txt
+.venv/bin/python -m pip install -e ./python
+```
+
+[python/requirements.txt](python/requirements.txt) declara NumPy, Pandas y Matplotlib. [python/requirements-lock.txt](python/requirements-lock.txt) registra las versiones exactas de esas bibliotecas y sus dependencias en el entorno verificado con Python 3.14.4. Para reproducir esas versiones, sustituyo el primer archivo por el segundo al instalar las dependencias. En otros intérpretes, `requirements.txt` permite resolver versiones compatibles.
 
 ## Ejecutar Java por separado
 
-Si todavía no está construido el JAR:
-
-```bash
-mvn -B -ntp -f java/pom.xml verify
-```
-
-Para ejecutar el mismo experimento:
+Después de la preparación:
 
 ```bash
 java -jar java/target/ape07.jar \
@@ -71,175 +88,201 @@ java -jar java/target/ape07.jar \
   --salida resultados/demo_java
 ```
 
-El JAR funciona sin Python. En un IDE, abre `java/pom.xml` como proyecto Maven, selecciona un JDK compatible con release 21 y ejecuta `ec.edu.simulacion.ape07.App`. La ayuda se obtiene con `java -jar java/target/ape07.jar --help`.
+El JAR funciona sin Python. La ayuda está disponible con `java -jar java/target/ape07.jar --help`. Desde un IDE, abro `java/pom.xml` como proyecto Maven y ejecuto `ec.edu.simulacion.ape07.App` con un JDK compatible.
+
+Para compilar y probar únicamente Java:
+
+```bash
+mvn -B -ntp -f java/pom.xml verify
+```
 
 ## Opciones compartidas
 
 | Opción | Valor predeterminado | Uso |
 |---|---|---|
-| `--semilla` | `123457` | Estado inicial del LCG |
-| `--tamanos` | `1000,10000,100000,1000000` | Cantidades de puntos, separadas por comas |
+| `--semilla` | `123457` | Estado inicial del generador |
+| `--tamanos` | `1000,10000,100000,1000000` | Cantidades de puntos, ordenadas y sin repetir |
 | `--repeticiones` | `5` | Mediciones de tiempo por tamaño |
-| `--salida` | `resultados/python` o `resultados/java` | Carpeta de salida |
+| `--salida` | `resultados/python` o `resultados/java` | Carpeta donde se guardan los archivos |
 
-La semilla debe ser un entero entre 1 y 2147483646. Los tamaños deben estar ordenados, no repetirse y pertenecer al intervalo de 1 a 1 000 000. Se permiten entre 1 y 30 repeticiones. Los límites de tamaño y repeticiones son decisiones operativas de esta implementación.
+La semilla admite enteros de **1 a 2147483646**. Cada tamaño debe estar entre 1 y 1 000 000; las repeticiones, entre 1 y 30. Los límites de puntos y repeticiones son decisiones operativas del programa. Las rutas de los comandos individuales son relativas a la carpeta desde la que se ejecutan.
 
-Para comprobar una entrada inválida:
+## Parámetros y decisiones del experimento
 
-```bash
-.venv/bin/python -m ape07 --tamanos 0
-```
-
-El programa explica el error y termina con código 2. Ambos ejecutables mantienen fijos los parámetros del LCG; la CLI permite cambiar su semilla.
-
-## Modelo matemático y parámetros
-
-El cuadrado tiene lado 2 y área 4. El círculo inscrito tiene radio 1 y área π. Bajo muestreo uniforme, la proporción de puntos interiores aproxima la razón de áreas π/4:
+Utilicé el generador congruencial lineal multiplicativo **MINSTD**, con `a=16807`, `c=0`, `m=2147483647` y semilla inicial `123457`:
 
 ```text
-S(k+1) = 16807 * S(k) mod 2147483647
+S(k+1) = (a * S(k) + c) mod m
+S(k+1) = (16807 * S(k)) mod 2147483647
 U = S / 2147483647
-x = 2*U1 - 1
-y = 2*U2 - 1
-interior si x*x + y*y <= 1
-pi_estimado = 4 * interiores / N
-error_absoluto = abs(pi_estimado - pi_referencia)
 ```
 
-Utilicé el LCG MINSTD con `a=16807`, `c=0`, `m=2147483647` y semilla `123457`. La elección del generador y la semilla está documentada en el informe como una decisión del experimento.
+Estos parámetros son la configuración elegida para el proyecto; la guía 07 no impone sus valores. Los ejecutables permiten cambiar la semilla, los tamaños, las repeticiones y la salida, y mantienen fijos `a`, `c` y `m`.
 
-Cada punto utiliza dos valores consecutivos: un millón de puntos requiere dos millones de estados. La fuente admite valores en `[0,1)` y las coordenadas corresponden al cuadrado `[-1,1)²`; el LCG con semilla válida produce valores estrictamente entre cero y uno. La frontera del círculo se incluye mediante `<=`.
+Cada punto consume dos valores consecutivos y los transforma en coordenadas del cuadrado `[-1,1)²`, de lado 2:
 
-Cada tamaño y cada repetición reinician la semilla. Por eso se evalúan prefijos de la misma secuencia y se repite el mismo problema para medir rendimiento. Hay tres calentamientos de hasta 10 000 puntos y cinco mediciones por tamaño de forma predeterminada.
+```text
+x = 2*U1 - 1
+y = 2*U2 - 1
+Dentro del círculo si: x² + y² <= 1
+```
 
-El intervalo medido comprende la construcción inmediata del generador y el estimador que genera y clasifica los puntos. Se utilizan `perf_counter` y `System.nanoTime`. Se excluyen compilación, calentamientos, consola, archivos y gráficas; se informa la mediana y se conservan todas las duraciones.
+El círculo tiene radio 1. Bajo muestreo uniforme, la proporción de puntos interiores aproxima la relación entre las áreas:
 
-## Comparación y gráficas
+```text
+Área del cuadrado = lado² = 2² = 4
+Área del círculo = π * radio² = π * 1² = π
+Proporción interior = Nc / N
+Porcentaje interior = 100 * Nc / N
+π estimado = 4 * Nc / N
+Error absoluto = |π estimado - π de referencia|
+```
 
-Después de ejecutar ambos programas en sus carpetas principales:
+`N` es el total de puntos y `Nc` la cantidad dentro del círculo. La referencia del error es `math.pi` en Python y `Math.PI` en Java. Un millón de puntos requiere dos millones de estados del generador.
+
+Cada tamaño y cada repetición reinician la semilla. Por eso los conteos se repiten y los tamaños utilizan prefijos de la misma secuencia. Antes de medir se realizan tres calentamientos de hasta 10 000 puntos. Se mide la generación y clasificación mediante `perf_counter` y `System.nanoTime`; compilación, calentamientos, consola, archivos y gráficas quedan fuera del intervalo medido. Se conserva cada duración y se presenta su mediana.
+
+El cálculo tiene complejidad **O(N)** porque procesa una vez cada punto. Más puntos aumentan el trabajo y no garantizan que el error absoluto disminuya en cada ejecución. La relación ideal `1/√N` describe la escala de la desviación estándar bajo muestreo uniforme e independiente; la curva del informe es una referencia visual y no una cota garantizada para el LCG.
+
+## Resultados y comparación
+
+| N | Interiores | π estimado | Error absoluto | Python (s) | Java (s) |
+|---:|---:|---:|---:|---:|---:|
+| 1 000 | 765 | 3.060000 | 0.08159265 | 0.00069456 | 0.00014955 |
+| 10 000 | 7 850 | 3.140000 | 0.00159265 | 0.00699646 | 0.00130951 |
+| 100 000 | 78 608 | 3.144320 | 0.00272735 | 0.07093225 | 0.00159038 |
+| 1 000 000 | 785 969 | 3.143876 | 0.00228335 | 0.70752325 | 0.01375321 |
+
+Fuente: `resultados/python/resumen.csv` y `resultados/java/resumen.csv`. Los tiempos son medianas de cinco mediciones por tamaño. Ambos lenguajes obtuvieron los mismos conteos y estimaciones. En estos resultados, la menor diferencia respecto a π ocurrió con 10 000 puntos y Java registró menores medianas; los tiempos dependen del equipo y de estas implementaciones.
+
+| Archivo | Contenido |
+|---|---|
+| `resultados/{python,java}/resumen.csv` | Tamaño, interiores, π, error, mediana, mínimo y repeticiones |
+| `.../tiempos.csv` | Duración de cada medición |
+| `.../primeros20.csv` | Hasta veinte puntos iniciales, con estados, coordenadas y clasificación |
+| `.../secuencia.bin` | Los 2N estados del mayor tamaño, como enteros de cuatro bytes big-endian |
+| `.../entorno.json` | Parámetros, versión, protocolo de medición y SHA-256 de la secuencia |
+| `resultados/comparacion/tabla_guia.csv` | Tabla consolidada Python/Java |
+| `.../primeros20_comparados.csv` | Comparación de las coordenadas iniciales |
+| `.../convergencia.csv` | Estimaciones para prefijos intermedios |
+| `.../puntos_convergencia.png` | Puntos dentro y fuera, y evolución del estimador |
+| `.../error_tiempos.png` | Error absoluto y medianas por lenguaje |
+| `.../verificacion.json` | Cantidades comparadas, parámetros y huella de la secuencia |
+| `resultados/revision/*.log` | Salida de compilación, ejecución y pruebas para revisar lo ocurrido |
+
+Los binarios están excluidos de Git y se recrean al ejecutar ambos programas. El comparador los necesita para verificar la secuencia completa.
+
+La carpeta de resultados está organizada así:
+
+```text
+resultados/
+├── python/             # Resultados principales de Python
+├── java/               # Resultados principales de Java
+├── comparacion/        # Tablas, verificación y gráficas principales
+├── demo_python/        # Resultados de demostración en Python
+├── demo_java/          # Resultados de demostración en Java
+├── demo_comparacion/   # Comparación conservada de una demostración
+└── revision/           # Registros .log de ejecución y pruebas
+```
+
+Los ejemplos con `--salida resultados/demo_python` y `--salida resultados/demo_java` guardan únicamente las salidas de cada lenguaje. `demo_comparacion` conserva una comparación anterior; esos dos comandos no la actualizan.
+
+Después de generar los resultados principales en ambos lenguajes, puedo reconstruir solamente la comparación y las gráficas:
 
 ```bash
 .venv/bin/python scripts/entrega.py
 ```
 
-Este script utiliza rutas fijas: lee `resultados/python` y `resultados/java`, y escribe en `resultados/comparacion`. Verifica los resultados, construye las tablas y genera dos gráficas. No genera el informe PDF ni un video.
+Este script lee exclusivamente `resultados/python` y `resultados/java`, y escribe en `resultados/comparacion`. Verifica todos los estados, su recurrencia, parámetros, coordenadas iniciales, conteos, estimaciones, errores y coherencia de los tiempos. Para la configuración principal compara dos millones de estados y reconstruye el millón de puntos. Los valores se contrastan numéricamente, aunque Python y Java puedan escribirlos con formatos decimales distintos.
 
-Para comparar las carpetas de demostración anteriores sin reemplazar la comparación principal:
+## Arquitectura MVC, POO y patrón Strategy
 
-```bash
-.venv/bin/python - <<'PY'
-from pathlib import Path
-from ape07.comparacion import comparar
+| Capa | Python | Java | Responsabilidad |
+|---|---|---|---|
+| Modelo | `modelo.py` | paquete `modelo` | Parámetros, LCG, estimación de π y medición de tiempos |
+| Vista | `vista.py` | paquete `vista` | Mostrar y guardar los resultados |
+| Controlador | `controlador.py` | paquete `controlador` | Coordinar el modelo y la vista |
+| Entrada | `__main__.py` | `App.java` | Leer argumentos y construir las dependencias |
 
-tabla = comparar(
-    Path("resultados/demo_python"),
-    Path("resultados/demo_java"),
-    Path("resultados/demo_comparacion"),
-)
-print(tabla.to_string(index=False))
-PY
-```
+En **Strategy**, `EstimadorPi` recibe el contrato `FuenteUniforme`. El experimento usa `GeneradorLCG` y las pruebas inyectan fuentes controladas para comprobar la geometría. Se puede sustituir la fuente que recibe el estimador sin cambiar su fórmula; la CLI actual utiliza siempre MINSTD. `comparacion.py` es la herramienta de verificación entre lenguajes y no forma parte del cálculo cronometrado.
 
-La función `comparar` audita las secuencias completas y escribe `tabla_guia.csv` y `verificacion.json`. Comprueba parámetros, longitud, SHA-256, recurrencia de cada estado, coordenadas iniciales, conteos reconstruidos, estimaciones, errores y coherencia de los tiempos. Rechaza una secuencia alterada incluso si se actualiza su hash.
+La POO se aplica mediante clases con responsabilidades separadas, el estado del generador y objetos de parámetros y resultados. Python utiliza `dataclass` y `Protocol`; Java utiliza `record` e interfaces. El punto de entrada construye las dependencias y las entrega a las clases que las necesitan. El modelo realiza los cálculos sin escribir archivos ni importar vistas o controladores.
 
-## Resultados conservados
-
-| N | Interiores | π estimado | Error absoluto | Python (s) | Java (s) |
-|---:|---:|---:|---:|---:|---:|
-| 1 000 | 765 | 3.060000 | 0.08159265 | 0.00036424 | 0.00007351 |
-| 10 000 | 7 850 | 3.140000 | 0.00159265 | 0.00402105 | 0.00063327 |
-| 100 000 | 78 608 | 3.144320 | 0.00272735 | 0.03984748 | 0.00088667 |
-| 1 000 000 | 785 969 | 3.143876 | 0.00228335 | 0.39313000 | 0.00649209 |
-
-Fuente: [tabla_guia.csv](resultados/comparacion/tabla_guia.csv). Los tiempos son medianas de las cinco mediciones originales por tamaño. La verificación de los datos conservados confirma **dos millones de estados y un millón de puntos coincidentes** entre lenguajes.
-
-La mejor aproximación ocurrió con **10 000 puntos**. Más puntos no garantizan menor error en cada prefijo. Bajo muestreo uniforme e independiente, la desviación estándar ideal escala como `1/√N`; la referencia de la gráfica ilustra esa forma, sin ser una cota ni demostrar independencia del LCG.
-
-Java registró menores medianas en estos datos. La conclusión corresponde a estas implementaciones y su entorno; los tiempos pueden cambiar al repetirlas. El estimador Python utiliza un bucle ordinario; el procesamiento con NumPy se realiza después, en el análisis de los archivos.
-
-## Archivos de salida
-
-| Archivo | Contenido |
-|---|---|
-| `resultados/{python,java}/resumen.csv` | N, interiores, π, error, mediana, mínimo y repeticiones |
-| `.../tiempos.csv` | Una duración por tamaño y repetición |
-| `.../primeros20.csv` | Hasta veinte puntos iniciales: estados, coordenadas y clasificación |
-| `.../secuencia.bin` | Los 2N estados del mayor tamaño, en enteros de cuatro bytes big-endian |
-| `.../entorno.json` | Parámetros, versión, protocolo de medición y huella de la secuencia |
-| `resultados/comparacion/tabla_guia.csv` | Tabla consolidada de ambos lenguajes |
-| `.../primeros20_comparados.csv` | Comparación legible de las coordenadas iniciales |
-| `.../convergencia.csv` | Estimaciones para prefijos intermedios |
-| `.../puntos_convergencia.png` | Hasta 5 000 puntos y evolución del estimador |
-| `.../error_tiempos.png` | Error absoluto y medianas Python/Java |
-| `.../verificacion.json` | Cantidades comparadas, parámetros y huella |
-| `resultados/revision/` | Registros de compilación, ejecución y verificaciones anteriores |
-
-Cada binario principal ocupa 8 000 000 de bytes. Los binarios se conservan localmente y están excluidos de Git; se recrean al ejecutar los programas. El comparador los necesita para verificar los datos completos.
-
-Las carpetas `resultados/demo_python`, `demo_java` y `demo_comparacion` contienen ejecuciones de demostración. Cambiar parámetros requiere utilizar carpetas coherentes en ambos lenguajes. Repetir un comando con la misma carpeta reemplaza sus archivos.
-
-## Arquitectura y diseño
+## Estructura del código
 
 ```text
 07APE/
-├── APE07-CoelloAnderson-U2-Simulacion.pdf
 ├── README.md
-├── GUIA_EXPOSICION.md
+├── APE07-CoelloAnderson-U2-Simulacion.pdf
+├── .gitignore
+├── .venv/                         # Entorno local, excluido de Git
 ├── python/
-│   ├── pyproject.toml, requirements.txt, requirements-lock.txt
+│   ├── pyproject.toml
+│   ├── requirements.txt
+│   ├── requirements-lock.txt
 │   ├── src/ape07/
-│   │   ├── modelo.py          # LCG, Strategy, estimador y mediciones
-│   │   ├── vista.py           # Consola y exportación
-│   │   ├── controlador.py     # Coordinación del experimento
-│   │   ├── comparacion.py     # Verificación cruzada de archivos
-│   │   ├── __main__.py        # Argumentos y composición
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── __main__.py
+│   │   ├── modelo.py
+│   │   ├── vista.py
+│   │   ├── controlador.py
+│   │   └── comparacion.py
 │   └── tests/test_qa.py
 ├── java/
 │   ├── pom.xml
-│   └── src/
-│       ├── main/java/ec/edu/simulacion/ape07/
-│       │   ├── modelo/, vista/, controlador/
-│       │   └── App.java
-│       └── test/java/ec/edu/simulacion/ape07/ModeloTest.java
+│   ├── src/main/java/ec/edu/simulacion/ape07/
+│   │   ├── App.java
+│   │   ├── modelo/
+│   │   ├── vista/
+│   │   └── controlador/
+│   ├── src/test/java/ec/edu/simulacion/ape07/ModeloTest.java
+│   └── target/                    # Compilación local, excluida de Git
 ├── scripts/
+│   ├── preparar.sh
+│   ├── ejecutar.sh
+│   ├── verificar.sh
+│   └── entrega.py
 └── resultados/
 ```
 
-**MVC:** el modelo calcula y valida; la vista presenta y exporta; el controlador coordina. Los puntos de entrada construyen las dependencias. La comparación entre lenguajes y las gráficas se ejecutan como herramientas adicionales.
-
-**Strategy:** `EstimadorPi` recibe el contrato `FuenteUniforme`. En el experimento se utiliza `GeneradorLCG` y en las pruebas se suministran fuentes controladas. Esto permite comprobar o sustituir la generación que consume el estimador sin cambiar la geometría. El medidor construye actualmente el LCG; seleccionar otra estrategia desde la CLI requeriría modificar esa construcción.
-
-POO se aplica mediante clases, encapsulación del estado y objetos inmutables para parámetros y resultados: `dataclass(frozen=True)` en Python y `record` en Java. La separación de tareas y el contrato pequeño de generación permiten justificar responsabilidad única e inversión de dependencias en el estimador.
-
-## Scripts incluidos
-
-| Script | Función y estado actual |
+| Script o configuración | Para qué sirve |
 |---|---|
-| `preparar.sh` | Prepara Python y compila y prueba Java. |
-| `ejecutar.sh` | Ejecuta ambos experimentos y reconstruye comparación y gráficas. Su mensaje final conserva una referencia a generadores documentales retirados. |
-| `verificar.sh` | Ejecuta JUnit y unittest, guarda registros y compara los resultados principales existentes. |
-| `entrega.py` | Verifica datos principales y genera tablas y PNG. |
-| `entregar.sh` | Conserva el flujo completo antiguo. Ejecuta etapas que reemplazan resultados y luego falla al llamar a los generadores del informe y video retirados. No lo utilizo como comando completo en esta versión. |
-| `auditar_entrega.py` | Conserva la auditoría documental antigua. Necesita la guía, los análisis y el video retirados; no puede completarse con la carpeta actual. |
+| `scripts/preparar.sh` | Crear el entorno, instalar Python y compilar y probar Java |
+| `scripts/ejecutar.sh` | Ejecutar los experimentos principales y generar tablas y PNG |
+| `scripts/verificar.sh` | Ejecutar las pruebas y verificar los datos principales |
+| `scripts/entrega.py` | Comparar archivos y generar tablas y PNG sin repetir los experimentos |
+| `python/pyproject.toml` | Configurar la instalación del paquete y el comando `ape07` |
+| `python/requirements.txt` | Declarar las dependencias directas |
+| `python/requirements-lock.txt` | Registrar versiones exactas del entorno verificado |
+| `java/pom.xml` | Configurar Java 21, JUnit, compilación y JAR ejecutable |
 
-## Verificación y errores frecuentes
+## Pruebas y errores frecuentes
 
-Para ejecutar las pruebas sin reconstruir tablas ni gráficas:
+La verificación completa, después de preparar y ejecutar los experimentos principales, es:
+
+```bash
+bash scripts/verificar.sh
+```
+
+Ejecuta Maven/JUnit, las campañas Python y la comparación de los resultados principales existentes. Los registros de las pruebas se guardan en `resultados/revision/java.log` y `resultados/revision/qa.log`.
+
+Para ejecutar solamente las pruebas, después de preparar el entorno:
 
 ```bash
 mvn -B -ntp -f java/pom.xml verify
 .venv/bin/python -m unittest discover -s python/tests -v
 ```
 
-La suite Python contiene **diez campañas** con subcasos e integración real con Java. Comprueba geometría, estados conocidos, reproducibilidad, entradas inválidas, rutas con espacios, secuencias manipuladas, tiempos incoherentes y carga de un millón de puntos. El JAR es obligatorio: su ausencia hace fallar la suite.
+Java incluye diez pruebas JUnit. Python incluye diez campañas con subcasos e integración real con Java; necesita el JAR construido. Se comprueban estados conocidos, geometría, reproducibilidad, límites, entradas inválidas, rutas con espacios, secuencias manipuladas, tiempos incoherentes y carga de un millón de puntos.
 
-Java añade **diez pruebas JUnit** del modelo. En la revisión actual ambas suites aprobaron, y la comparación de los resultados principales confirmó la igualdad completa de los estados y los conteos.
+- `No module named ape07`: ejecuto la preparación y uso `.venv/bin/python`, o activo el entorno.
+- Error al crear `.venv`: reviso que el componente `venv` esté instalado para mi versión de Python.
+- `release version 21 not supported`: configuro Maven con un JDK 21 o superior y compruebo su versión con `mvn -version`.
+- Falta `secuencia.bin`: ejecuto ambos experimentos principales antes de comparar.
+- Parámetros incompatibles o secuencias distintas: reviso que ambos programas se hayan ejecutado con la misma semilla, tamaños y repeticiones.
+- Semilla, tamaños o repeticiones fuera de los límites: la CLI termina con código 2 y muestra el error.
 
-- `No module named ape07`: ejecuta la preparación y utiliza `.venv/bin/python`.
-- Falta el JAR: ejecuta `mvn -B -ntp -f java/pom.xml verify`.
-- `release version 21 not supported`: configura Maven con un JDK compatible y revisa `mvn -version`.
-- Falta `secuencia.bin` o no coinciden parámetros: ejecuta ambos programas con configuraciones equivalentes en las carpetas correspondientes.
-- Error de archivo ausente al usar `entregar.sh` o `auditar_entrega.py`: esos scripts dependen de material retirado; utiliza el flujo de ejecución y pruebas documentado arriba.
+## Enlaces de la práctica
 
-Los registros antiguos de auditoría describen el estado anterior de la entrega. No certifican que sigan presentes los archivos retirados ni sustituyen una verificación actual.
+- [Repositorio en GitHub](https://github.com/AndersonC15/Simulacion/tree/main/02Unidad/07APE).
+- [Video de demostración en Google Drive](https://drive.google.com/file/d/1Q0uEeraq0bAYnZmH4SY4CKrbCAZI32bb/view?usp=sharing).
