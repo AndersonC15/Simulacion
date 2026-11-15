@@ -1,14 +1,9 @@
-# APE 07 — Estimación de π mediante Monte Carlo
+   PE 07 — Estimación de π mediante Monte Carlo
 
 Práctica de **Simulación, quinto ciclo de Computación**. Implementé el mismo experimento en **Python y Java** para aproximar π mediante Monte Carlo: generar puntos en un cuadrado y contar los que caen dentro del círculo inscrito. Comparo las estimaciones, el error absoluto y los tiempos para 1 000, 10 000, 100 000 y 1 000 000 de puntos.
 
 Organicé ambos programas con **MVC** y utilicé **Strategy** para separar la fuente de números pseudoaleatorios del estimador.
 
-## Informe para entregar
-
-El informe académico está en [APE07-CoelloAnderson-U2-Simulacion.pdf](APE07-CoelloAnderson-U2-Simulacion.pdf). Incluye objetivos, modelo matemático, procedimiento, resultados, gráficas, preguntas de análisis y control, conclusiones, bibliografía y anexos. Los anexos contienen los enlaces del repositorio y del video de demostración.
-
-El PDF conserva las mediciones documentadas. Los scripts reconstruyen los resultados y las gráficas; el informe se actualiza por separado. Si repito las mediciones, debo revisar los tiempos del PDF antes de entregar una nueva versión.
 
 ## Requisitos
 
